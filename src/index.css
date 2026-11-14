@@ -1,0 +1,207 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply m-0 p-0 overflow-x-hidden antialiased;
+    font-family: 'Kalam', 'Patrick Hand', 'Caveat', cursive, sans-serif;
+    background-color: #1A1A1A;
+    background-image: 
+      radial-gradient(ellipse 90% 60% at 50% -10%, rgba(255, 140, 66, 0.05) 0%, transparent 70%),
+      radial-gradient(ellipse 70% 50% at 80% 90%, rgba(136, 212, 158, 0.05) 0%, transparent 60%),
+      linear-gradient(to right, rgba(230, 230, 230, 0.03) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(230, 230, 230, 0.03) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 36px 36px, 36px 36px;
+    color: #E6E6E6;
+  }
+
+  /* Custom Chalkboard Scrollbars */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: rgba(26, 26, 26, 0.9);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(230, 230, 230, 0.35);
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #FF8C42;
+  }
+}
+
+/* Dedicated Visible Horizontal Scrollbar */
+.visible-scrollbar-x {
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #FF8C42 rgba(230, 230, 230, 0.08);
+}
+.visible-scrollbar-x::-webkit-scrollbar {
+  height: 5px;
+}
+.visible-scrollbar-x::-webkit-scrollbar-track {
+  background: rgba(230, 230, 230, 0.08);
+  border-radius: 9999px;
+  margin: 0 4px;
+}
+.visible-scrollbar-x::-webkit-scrollbar-thumb {
+  background: #FF8C42;
+  border-radius: 9999px;
+}
+.visible-scrollbar-x::-webkit-scrollbar-thumb:hover {
+  background: #ffa86e;
+}
+
+/* Dedicated Visible Vertical Scrollbar */
+.visible-scrollbar-y {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(230, 230, 230, 0.45) rgba(26, 26, 26, 0.6);
+}
+.visible-scrollbar-y::-webkit-scrollbar {
+  width: 5px;
+}
+.visible-scrollbar-y::-webkit-scrollbar-track {
+  background: rgba(26, 26, 26, 0.6);
+  border-radius: 9999px;
+}
+.visible-scrollbar-y::-webkit-scrollbar-thumb {
+  background: rgba(230, 230, 230, 0.4);
+  border-radius: 9999px;
+}
+.visible-scrollbar-y::-webkit-scrollbar-thumb:hover {
+  background: #FF8C42;
+}
+
+/* Digital Sketchbook & Chalkboard Utility Classes */
+.font-sketch {
+  font-family: 'Kalam', 'Patrick Hand', cursive, sans-serif;
+  letter-spacing: 0.01em;
+}
+
+.font-marker {
+  font-family: 'Caveat', 'Kalam', cursive, sans-serif;
+}
+
+.font-chalk {
+  font-family: 'Patrick Hand', 'Kalam', cursive, sans-serif;
+}
+
+.font-digits {
+  font-family: 'JetBrains Mono', monospace;
+  font-feature-settings: 'tnum' 1, 'zero' 1;
+}
+
+/* Diagonal Scribbles / Hatching Patterns (as per Design Guide) */
+.hatch-pattern {
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(230, 230, 230, 0.06),
+    rgba(230, 230, 230, 0.06) 2px,
+    transparent 2px,
+    transparent 7px
+  );
+}
+
+.hatch-orange {
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(255, 140, 66, 0.18),
+    rgba(255, 140, 66, 0.18) 2px,
+    transparent 2px,
+    transparent 6px
+  );
+}
+
+.hatch-green {
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(136, 212, 158, 0.18),
+    rgba(136, 212, 158, 0.18) 2px,
+    transparent 2px,
+    transparent 6px
+  );
+}
+
+/* Sketchy Hand-drawn Wireframe Border */
+.sketch-card {
+  background: #202020;
+  border: 1.5px solid rgba(230, 230, 230, 0.35);
+  box-shadow: 
+    2px 3px 0px rgba(230, 230, 230, 0.12),
+    inset 0 0 12px rgba(255, 255, 255, 0.02);
+}
+
+.sketch-card:hover {
+  border-color: rgba(255, 140, 66, 0.6);
+  box-shadow: 
+    3px 4px 0px rgba(255, 140, 66, 0.25),
+    inset 0 0 12px rgba(255, 140, 66, 0.03);
+}
+
+/* Hand-Drawn Dashed Bounding Box */
+.sketch-dashed {
+  border: 1.5px dashed rgba(230, 230, 230, 0.45);
+}
+
+/* Hand-Drawn Chalk CTA Button (Muted Orange #FF8C42) */
+.sketch-btn-orange {
+  background-color: #FF8C42;
+  color: #1A1A1A;
+  border: 2px solid #E6E6E6;
+  font-family: 'Kalam', cursive, sans-serif;
+  font-weight: 700;
+  box-shadow: 3px 3px 0px #E6E6E6;
+  transition: all 0.12s ease-in-out;
+}
+
+.sketch-btn-orange:hover {
+  background-color: #FFA163;
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0px #E6E6E6;
+}
+
+.sketch-btn-orange:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px #E6E6E6;
+}
+
+/* Secondary Sage Green Button (#88D49E) */
+.sketch-btn-green {
+  background-color: #88D49E;
+  color: #1A1A1A;
+  border: 2px solid #E6E6E6;
+  font-family: 'Kalam', cursive, sans-serif;
+  font-weight: 700;
+  box-shadow: 3px 3px 0px #E6E6E6;
+  transition: all 0.12s ease-in-out;
+}
+
+.sketch-btn-green:hover {
+  background-color: #9FE0B2;
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0px #E6E6E6;
+}
+
+.sketch-btn-green:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px #E6E6E6;
+}
+
+/* Minimal Chalk Outline Button */
+.sketch-btn-outline {
+  background-color: transparent;
+  color: #E6E6E6;
+  border: 1.5px solid #E6E6E6;
+  box-shadow: 2px 2px 0px rgba(230, 230, 230, 0.2);
+  transition: all 0.12s ease-in-out;
+}
+
+.sketch-btn-outline:hover {
+  background-color: rgba(230, 230, 230, 0.1);
+  border-color: #FF8C42;
+  color: #FF8C42;
+}
