@@ -5,6 +5,7 @@ import {
   calculatePrice,
   calculateRuleCap,
   getEffectiveCap,
+  getCustomCapError,
   getApprovalBand,
   calculateWorstCaseLoss,
   isScheduleValid
@@ -42,8 +43,9 @@ export const PriceGateTab: React.FC = () => {
   const words = numberToWords(price);
   const belowLowestEver = Math.max(0, PRICING_RULES.LOWEST_EVER_SOLD - price);
 
-  const customCapError = customCap !== null && customCap <= 0;
-  const customCapClamped = customCap !== null && customCap > ruleCap && ruleCap > 0;
+  // Custom cap must be 1..ruleCap; anything else is rejected, never silently replaced by the rule cap
+  const customCapMessage = getCustomCapError(customCap, ruleCap);
+  const customCapError = customCapMessage !== null;
   const capIsZero = effectiveCap <= 0;
   const scheduleOk = isScheduleValid(scheduledTime);
 
@@ -52,7 +54,7 @@ export const PriceGateTab: React.FC = () => {
     : isNoDiscount
       ? '0% means no discount, so there is no sale to schedule.'
       : customCapError
-        ? 'Custom cap must be at least 1 seat.'
+        ? customCapMessage
         : capIsZero
           ? 'Sale-seat cap is 0 seats, so this sale cannot run. Raise the loss budget.'
           : !scheduleOk
@@ -208,7 +210,11 @@ export const PriceGateTab: React.FC = () => {
           </div>
           <div className="text-right">
             <span className="text-[10px] font-mono text-[#E6E6E6]/60 uppercase block">Rule Cap: {ruleCap} Seats</span>
-            <span className="font-mono font-bold text-lg text-[#88D49E]">{effectiveCap} Seats Allowed</span>
+            {customCapError ? (
+              <span className="font-mono font-bold text-lg text-red-400">— Fix custom cap</span>
+            ) : (
+              <span className="font-mono font-bold text-lg text-[#88D49E]">{effectiveCap} Seats Allowed</span>
+            )}
           </div>
         </div>
 
@@ -303,12 +309,7 @@ export const PriceGateTab: React.FC = () => {
               )}
             </div>
             {customCapError && (
-              <p className="w-full text-xs text-red-400 font-mono">⚠ Custom cap must be at least 1 seat.</p>
-            )}
-            {customCapClamped && (
-              <p className="w-full text-xs text-[#FF8C42] font-chalk">
-                {customCap} is above the rule cap, so {ruleCap} is used. The cap can only be lowered, never raised.
-              </p>
+              <p className="w-full text-xs text-red-400 font-mono">⚠ {customCapMessage}</p>
             )}
             {capIsZero && !customCapError && (
               <p className="w-full text-xs text-red-400 font-mono">⚠ Cap is 0 seats: the sale cannot run with this budget.</p>
@@ -342,7 +343,7 @@ export const PriceGateTab: React.FC = () => {
               15% · 20% · 10% · 25% · 20% (Lowest ever sold: {formatMoney(PRICING_RULES.LOWEST_EVER_SOLD)})
             </p>
             <p className="text-[10.5px] text-[#E6E6E6]/60 font-chalk mt-0.5">
-              Max potential loss at current settings: <strong className="text-[#FF8C42]">{formatMoney(worstCase)}</strong>
+              Max potential loss at current settings: <strong className="text-[#FF8C42]">{customCapError ? '—' : formatMoney(worstCase)}</strong>
             </p>
           </div>
         </div>
@@ -375,7 +376,7 @@ export const PriceGateTab: React.FC = () => {
               }`}
             >
               <Check size={16} />
-              <span>{isInvalid ? 'SCHEDULE SALE' : `SCHEDULE SALE · ${formatMoney(price)} (${effectiveCap} SEATS)`}</span>
+              <span>{isInvalid || customCapError ? 'SCHEDULE SALE' : `SCHEDULE SALE · ${formatMoney(price)} (${effectiveCap} SEATS)`}</span>
             </button>
           )}
 

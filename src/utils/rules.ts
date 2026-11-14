@@ -42,6 +42,19 @@ export function getEffectiveCap(
 }
 
 /**
+ * Validate a staff custom cap: it must be 1..ruleCap (empty = use the rule cap).
+ * Returns an error message, or null when valid.
+ */
+export function getCustomCapError(customCap: number | null, ruleCap: number): string | null {
+  if (customCap == null) return null;
+  if (customCap <= 0) return 'Custom cap must be at least 1 seat.';
+  if (ruleCap > 0 && customCap > ruleCap) {
+    return `Custom cap cannot be above the rule cap of ${ruleCap} seats. The cap can only be lowered, never raised.`;
+  }
+  return null;
+}
+
+/**
  * Determine approval band:
  * - 0 to 30%: band_1 (requester alone; 0% means no discount)
  * - Over 30 to 60%: band_2 (second approver)

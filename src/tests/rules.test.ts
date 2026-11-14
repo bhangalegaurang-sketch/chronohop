@@ -3,6 +3,7 @@ import {
   calculatePrice,
   calculateRuleCap,
   getEffectiveCap,
+  getCustomCapError,
   getApprovalBand,
   checkBreakerTriggered,
   verifyRetypedPrice,
@@ -42,6 +43,20 @@ describe('ChronoHop Price Gate Business Rules', () => {
       expect(getEffectiveCap(10, 100000, 20)).toBe(20);
       // Staff tries to raise to 50, but rule caps it at 33
       expect(getEffectiveCap(10, 100000, 50)).toBe(ruleCap);
+    });
+
+    it('rejects a custom cap of 0, negative, or above the rule cap instead of using 33', () => {
+      expect(getCustomCapError(0, 33)).toBe('Custom cap must be at least 1 seat.');
+      expect(getCustomCapError(-5, 33)).toBe('Custom cap must be at least 1 seat.');
+      expect(getCustomCapError(34, 33)).toMatch(/cannot be above the rule cap of 33/);
+      expect(getCustomCapError(500, 33)).toMatch(/cannot be above the rule cap of 33/);
+    });
+
+    it('accepts an empty custom cap and any cap from 1 to the rule cap', () => {
+      expect(getCustomCapError(null, 33)).toBeNull();
+      expect(getCustomCapError(1, 33)).toBeNull();
+      expect(getCustomCapError(20, 33)).toBeNull();
+      expect(getCustomCapError(33, 33)).toBeNull();
     });
 
     it('gives a cap of 0 when the loss budget is $0', () => {
