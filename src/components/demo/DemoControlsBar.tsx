@@ -34,10 +34,10 @@ export const DemoControlsBar: React.FC = () => {
   return (
     <footer className="sticky bottom-3 z-40 px-4 py-2 w-full flex justify-center pointer-events-none select-none font-sketch">
       {/* Floating Bottom Chin Island Bar */}
-      <div className="pointer-events-auto max-w-6xl w-full bg-[#181818]/95 backdrop-blur-md border-2 border-[#E6E6E6]/40 rounded-full p-2 shadow-[0_12px_32px_rgba(0,0,0,0.6)] flex flex-wrap items-center justify-between gap-3 text-xs text-[#E6E6E6]">
+      <div className="pointer-events-auto max-w-6xl w-full bg-[#181818]/95 backdrop-blur-md border border-[#E6E6E6]/30 rounded-2xl sm:rounded-full px-4 py-2.5 shadow-[0_12px_32px_rgba(0,0,0,0.6)] flex items-center justify-between gap-4 text-xs text-[#E6E6E6]">
         {/* Left: Section Brand / Status */}
-        <div className="flex items-center gap-2 pl-3">
-          <span className="font-sketch font-bold uppercase tracking-wider text-[#FF8C42] flex items-center gap-1.5 text-xs">
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <span className="font-sketch font-bold uppercase tracking-wider text-[#FF8C42] flex items-center gap-1.5 text-xs whitespace-nowrap">
             <span>✳</span>
             <span>SIMULATOR CONTROLS</span>
           </span>
@@ -50,7 +50,7 @@ export const DemoControlsBar: React.FC = () => {
 
         {/* Center: Magnetic Sliding Cursor Floating Tab Group */}
         <ul
-          className="relative flex items-center flex-wrap gap-1 rounded-full p-1"
+          className="relative flex items-center gap-1 flex-nowrap overflow-x-auto py-1"
           onMouseLeave={() => setCursorPosition((prev) => ({ ...prev, opacity: 0 }))}
         >
           {/* Animated Magnetic Cursor */}
@@ -71,7 +71,7 @@ export const DemoControlsBar: React.FC = () => {
             onClick={() => bookSeat(1)}
             title="Simulate 1 customer completing purchase"
           >
-            <span className="flex items-center gap-1.5 text-[#E6E6E6] hover:text-[#FFFFFF]">
+            <span className="flex items-center gap-1.5 text-[#E6E6E6] hover:text-[#FFFFFF] whitespace-nowrap">
               <UserCheck size={14} className="text-[#88D49E]" />
               Simulate Booking
             </span>
@@ -84,7 +84,7 @@ export const DemoControlsBar: React.FC = () => {
             onClick={triggerRush}
             title="Simulate rapid booking surge from deal aggregator"
           >
-            <span className="flex items-center gap-1.5 text-[#E6E6E6] hover:text-[#FFFFFF]">
+            <span className="flex items-center gap-1.5 text-[#E6E6E6] hover:text-[#FFFFFF] whitespace-nowrap">
               <Zap size={14} className="text-[#FF8C42]" />
               Deal-site Rush
             </span>
@@ -96,7 +96,7 @@ export const DemoControlsBar: React.FC = () => {
             onClick={forceLiveDemo}
             title="Fast forward schedule & publish immediately"
           >
-            <span className="flex items-center gap-1.5 text-[#FF8C42] hover:text-white">
+            <span className="flex items-center gap-1.5 text-[#FF8C42] hover:text-white whitespace-nowrap">
               <Play size={14} />
               Publish Now
             </span>
@@ -108,7 +108,7 @@ export const DemoControlsBar: React.FC = () => {
             onClick={() => switchRole()}
             title="Switch operator role (Analyst / Approver)"
           >
-            <span className="flex items-center gap-1.5 text-[#88D49E] hover:text-white">
+            <span className="flex items-center gap-1.5 text-[#88D49E] hover:text-white whitespace-nowrap">
               <User size={14} />
               Role: {currentRole === 'analyst' ? 'Asha (Analyst)' : 'Marcus (Approver)'}
             </span>
@@ -120,7 +120,7 @@ export const DemoControlsBar: React.FC = () => {
             onClick={resetAll}
             title="Reset system to clean prototype state"
           >
-            <span className="flex items-center gap-1.5 text-red-300 hover:text-white">
+            <span className="flex items-center gap-1.5 text-red-300 hover:text-white whitespace-nowrap">
               <RotateCcw size={14} />
               Reset State
             </span>
@@ -128,10 +128,10 @@ export const DemoControlsBar: React.FC = () => {
         </ul>
 
         {/* Right: Lock Armed Toggles */}
-        <div className="flex items-center gap-2 pr-3">
+        <div className="flex items-center gap-2 flex-shrink-0">
           <button
             onClick={toggleLock1}
-            className={`px-3 py-1 rounded-full text-[11px] font-mono font-bold border transition-colors flex items-center gap-1 ${
+            className={`px-3 py-1 rounded-full text-[11px] font-mono font-bold border transition-colors flex items-center gap-1 whitespace-nowrap ${
               lock1CapEnabled
                 ? 'bg-[#88D49E]/15 text-[#88D49E] border-[#88D49E]/50'
                 : 'bg-red-500/15 text-red-300 border-red-500/50'
@@ -144,7 +144,7 @@ export const DemoControlsBar: React.FC = () => {
 
           <button
             onClick={toggleLock4}
-            className={`px-3 py-1 rounded-full text-[11px] font-mono font-bold border transition-colors flex items-center gap-1 ${
+            className={`px-3 py-1 rounded-full text-[11px] font-mono font-bold border transition-colors flex items-center gap-1 whitespace-nowrap ${
               lock4BreakerEnabled
                 ? 'bg-[#88D49E]/15 text-[#88D49E] border-[#88D49E]/50'
                 : 'bg-red-500/15 text-red-300 border-red-500/50'
