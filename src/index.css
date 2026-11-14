@@ -76,6 +76,33 @@
   background: #FF8C42;
 }
 
+/* Controller & Console Utility Styles */
+.brass-btn {
+  background: #FF8C42;
+  color: #1A1A1A;
+  font-weight: 700;
+  border-radius: 9999px;
+  box-shadow: 2px 2px 0px rgba(255, 255, 255, 0.25);
+  transition: all 0.15s ease;
+}
+.brass-btn:hover {
+  background: #ffa86e;
+  transform: translateY(-1px);
+}
+.brass-btn:active {
+  transform: translateY(1px);
+}
+
+.danger-hazard-banner {
+  background: repeating-linear-gradient(
+    -45deg,
+    #7a1818,
+    #7a1818 10px,
+    #4a0e0e 10px,
+    #4a0e0e 20px
+  );
+}
+
 /* Digital Sketchbook & Chalkboard Utility Classes */
 .font-sketch {
   font-family: 'Kalam', 'Patrick Hand', cursive, sans-serif;
