@@ -5,7 +5,7 @@ export const ProfileScreen: React.FC = () => {
   const [isSaved, setIsSaved] = useState(true);
 
   return (
-    <div className="flex flex-col h-full visible-scrollbar-y pb-28 p-4 text-[#E6E6E6] font-sketch select-none relative z-10 space-y-4">
+    <div className="h-full visible-scrollbar-y pb-28 p-4 text-[#E6E6E6] font-sketch select-none relative z-10 space-y-4">
       {/* Top Brand Bar */}
       <div className="flex items-center justify-between pt-1 pb-2 border-b border-[#E6E6E6]/15">
         <div className="flex items-center gap-2.5">

@@ -28,7 +28,7 @@ export const ExploreScreen: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full visible-scrollbar-y pb-28 text-[#E6E6E6] font-sketch select-none relative z-10 p-4 space-y-4">
+    <div className="h-full visible-scrollbar-y pb-28 text-[#E6E6E6] font-sketch select-none relative z-10 p-4 space-y-4">
       {/* 1. TOP BRAND LOGO (Clean Editorial Header) */}
       <div className="flex items-center justify-between pt-1 pb-2 border-b border-[#E6E6E6]/15">
         <div className="flex items-center gap-2.5">
@@ -44,30 +44,14 @@ export const ExploreScreen: React.FC = () => {
         </div>
       </div>
 
-      {/* 2. EDITORIAL HERO (Travel Time Inspiration) */}
-      <div className="sketch-card rounded-[26px] p-5 relative overflow-hidden bg-[#202020]/95 backdrop-blur-xs">
-        <div className="absolute top-0 right-0 w-32 h-32 hatch-orange opacity-30 rounded-bl-[40px] pointer-events-none" />
-
-        <div className="relative z-10">
-          <h1 className="text-3xl font-marker font-bold leading-tight text-[#FFFFFF] tracking-tight">
-            Travel <span className="text-[#FF8C42]">Time</span>
-          </h1>
-          <p className="text-xs text-[#E6E6E6]/85 font-chalk mt-1 leading-relaxed">
-            Curated departures to pivotal moments in history. Enclosed pressurized observation pods, licensed chrononavigators, and guaranteed return beacons.
-          </p>
-
-          <div className="mt-3 pt-2.5 border-t border-[#E6E6E6]/20 flex items-center justify-between">
-            <span className="text-xs font-sketch text-[#FF8C42]">
-              ✎ 4 verified historical epochs
-            </span>
-            <button
-              onClick={() => handleOpenTrip('dino')}
-              className="sketch-btn-orange text-xs px-4 py-1.5 rounded-full"
-            >
-              EXPLORE PROMO →
-            </button>
-          </div>
-        </div>
+      {/* 2. EDITORIAL HERO (Travel Time Clean Typography) */}
+      <div className="pt-2 pb-1 space-y-1.5">
+        <h1 className="text-3xl font-marker font-bold leading-tight text-[#FFFFFF] tracking-tight">
+          Travel <span className="text-[#FF8C42]">Time</span>
+        </h1>
+        <p className="text-xs text-[#E6E6E6]/85 font-chalk leading-relaxed">
+          Curated departures across prehistoric and human history. Enclosed pressurized observation pods, licensed chrononavigators, and synchronized return beacons.
+        </p>
       </div>
 
       {/* 3. ERA FILTER NODES (Horizontal Flow with VISIBLE SCROLLBAR) */}
