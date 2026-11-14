@@ -24,9 +24,6 @@ export const StaffConsole: React.FC = () => {
                 FOUR-LOCKS v2.4
               </span>
             </div>
-            <p className="text-[11px] text-[#E6E6E6]/70 font-chalk">
-              Pricing governance, dual-authorization &amp; speed breaker telemetry
-            </p>
           </div>
         </div>
 
