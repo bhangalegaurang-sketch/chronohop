@@ -16,32 +16,24 @@ export const CustomerPhone: React.FC = () => {
     customerScreen,
     showFairPriceSheet,
     setShowFairPriceSheet,
-    liveSale
+    liveSale,
+    triggerRush,
+    resetAll
   } = useStore();
 
   const isTabScreen = ['explore', 'search', 'profile'].includes(customerScreen);
 
   return (
-    <div className="flex flex-col items-center">
-      {/* Hand-drawn Floating Annotation above Phone (Design Guide Section 5) */}
-      <div className="mb-2 flex items-center justify-between w-[390px] px-2 text-xs font-sketch text-[#E6E6E6]/70">
-        <span className="flex items-center gap-1.5 text-[13px] text-[#FF8C42]">
-          ✎ wireframe prototype (390×844)
-        </span>
-        <span className="text-[12px] text-[#88D49E] flex items-center gap-1">
-          ✓ digital chalkboard aesthetic
-        </span>
-      </div>
-
-      {/* 390x844 Minimal Hand-Drawn Wireframe Phone with Thin White Outline (Design Guide Section 4) */}
+    <div className="flex flex-col items-center w-full">
+      {/* Phone container: full screen on mobile (<500px), framed 390x844 on desktop */}
       <div 
-        className="w-[390px] h-[844px] bg-[#1A1A1A] border-2 border-[#E6E6E6]/70 rounded-[44px] shadow-[6px_8px_0px_rgba(230,230,230,0.08)] flex flex-col relative overflow-hidden flex-shrink-0 select-none"
+        className="w-full max-w-[500px] h-[100dvh] sm:w-[390px] sm:h-[844px] bg-[#1A1A1A] border-0 sm:border-2 border-[#E6E6E6]/70 sm:rounded-[44px] sm:shadow-[6px_8px_0px_rgba(230,230,230,0.08)] flex flex-col relative overflow-hidden flex-shrink-0 select-none"
       >
         {/* Digital Chalkboard Time Travel Canvas INSIDE Phone */}
         <PhoneTimeTravelBackground />
 
         {/* Minimal Hand-Drawn Dynamic Island Wireframe */}
-        <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-28 h-5 bg-[#141414] border border-[#E6E6E6]/30 rounded-full z-50 flex items-center justify-end px-2.5 shadow-xs">
+        <div className="hidden sm:flex absolute top-2.5 left-1/2 -translate-x-1/2 w-28 h-5 bg-[#141414] border border-[#E6E6E6]/30 rounded-full z-50 items-center justify-end px-2.5 shadow-xs">
           <div className="w-2 h-2 rounded-full bg-[#E6E6E6]/40" />
         </div>
 
@@ -67,10 +59,10 @@ export const CustomerPhone: React.FC = () => {
           </div>
         </div>
 
-        {/* Paused Calibration Banner (With Diagonal Scribbles / Hatching as per Design Guide) */}
+        {/* Priority 5.2: Paused Breaker Banner */}
         {liveSale.isPaused && (
-          <div className="hatch-orange bg-[#1A1A1A] text-[#FF8C42] border-y border-[#FF8C42]/50 text-[11px] font-sketch font-bold py-1 px-4 text-center z-30 shadow-xs flex items-center justify-center gap-1.5">
-            <span>⚠ PAUSED FOR TEMPORAL RE-CALIBRATION ⚠</span>
+          <div className="hatch-orange bg-[#1A1A1A] text-[#FF8C42] border-y border-[#FF8C42]/50 text-[11px] font-sketch font-bold py-1.5 px-3 text-center z-30 shadow-xs flex items-center justify-center gap-1.5 leading-snug">
+            <span>Bookings for this trip are paused for a few minutes while we check something. Your place is saved. Nothing has been charged.</span>
           </div>
         )}
 
@@ -98,6 +90,22 @@ export const CustomerPhone: React.FC = () => {
         <div className="relative z-20 w-full h-4 flex items-center justify-center bg-transparent flex-shrink-0">
           <div className="w-32 h-1 bg-[#E6E6E6]/40 rounded-full" />
         </div>
+      </div>
+
+      {/* Priority 5.2: Unobtrusive Demo control outside phone */}
+      <div className="mt-2.5 flex items-center gap-2 text-xs font-sketch z-20">
+        <button
+          onClick={triggerRush}
+          className="sketch-btn px-3.5 py-1.5 rounded-full border border-[#FF8C42]/60 text-[#FF8C42] hover:bg-[#FF8C42]/10 transition-colors flex items-center gap-1.5"
+        >
+          <span>⚡ Simulate a deal-site rush</span>
+        </button>
+        <button
+          onClick={resetAll}
+          className="sketch-btn px-3 py-1.5 rounded-full border border-[#E6E6E6]/40 text-[#E6E6E6]/80 hover:text-white hover:bg-white/5 transition-colors"
+        >
+          ↺ Reset
+        </button>
       </div>
     </div>
   );

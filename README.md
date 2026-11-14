@@ -44,14 +44,14 @@ The prototype features a synchronized, reactive, side-by-side display:
    - **Screens:**
      - **Explore:** Search bar, trip catalog with photos (`dino.jpg`, `pyramids.jpg`, `pod.jpg`), flagship sale badges.
      - **Trip Page:** Dinosaur Walk hero, strikethrough list price `$2,000`, active sale price `$1,600`, **33-tick seat bar** (one tick per sale seat), departure slot chips (`06:00`, `06:30`, `07:00`, `07:30`), Fair Price Policy modal trigger, Book button.
-     - **Checkout:** Boarding-pass format with perforation cutouts, **08:00 countdown timer** holding the slot, price re-check validation, and "The price you see is the price you pay" shield guarantee.
+     - **Checkout:** Boarding-pass format with perforation cutouts, **05:00 countdown timer** holding the slot, price re-check validation, and "The price you see is the price you pay" shield guarantee.
      - **Listing Paused:** Number 214 in line, "Nothing has been charged", disabled CTA.
-     - **Sale Seats Gone:** Reverted to $2,000, 8-minute hold notice, waitlist CTA.
+     - **Sale Seats Gone:** Reverted to $2,000, 5-minute hold notice, waitlist CTA.
      - **Confirmation & Waitlist:** Completion receipts with policy guarantees.
 
 2. **Right Pane: Staff Console ("ChronoHop Control")**
    - **Dark Control-Room Theme:** `#0A1612` background, `#0F1F19` panel, `#223A30` border, `#EDE6D4` text, `#A5B3AA` muted, `#E3A93B` brass, `#F1C46B` price neon glow, `#C4302B` / `#FF9A8D` danger red, `#6FD3A0` ok green.
-   - **Four-Locks Status Strip:** Live status of Lock 1 (Cap Rule), Lock 2 (Retype Peer), Lock 3 (Auto-Revert), Lock 4 (Speed Breaker).
+   - **Four-Locks Status Strip:** Live status of Lock 1 (Percent Entry), Lock 2 (Second Look), Lock 3 (Sale-Seat Cap), Lock 4 (Speed Breaker).
    - **Price Gate Tab:** Discount percent input (0–100%, 1 decimal), price in digits and words at >2x size, 3-tier visual band indicator, cap calculation section with share slider (5–20%) and budget input, custom cap lowering, last 5 sales reference, goes-live scheduling (24h minimum), full-width red STOP banner with executive override controls.
    - **Approvals Tab:** Pending request side-by-side comparison (List price, New price, Drop %), exact price retype verification (3 failed tries cancels request), separate account identity check.
    - **Timeline Desk Tab:** Three dial gauges (Bookings per slot [Max 1], Lowest price sold vs list, Bookings last 5m vs forecast), sale-speed bar chart with forecast line (6) and breaker threshold (30), live operations controls (Pause listing, 1-click Resume, End sale early), and chronological audit event log.
@@ -63,7 +63,7 @@ The prototype features a synchronized, reactive, side-by-side display:
      - **Go live now (demo):** Bypasses the 24-hour scheduling requirement to publish the current draft immediately.
      - **Switch role:** Toggles active account between `Asha (Pricing Analyst)` and `Marcus (Peer Approver)`.
      - **Reset:** Restores store state to the initial baseline.
-     - **Lock 1 Cap toggle:** Toggles Lock 1 on/off to demonstrate unconstrained loss.
+     - **Lock 3 Cap toggle:** Toggles Lock 3 on/off to demonstrate unconstrained loss.
      - **Lock 4 Breaker toggle:** Toggles Lock 4 on/off to demonstrate unchecked runaway surges.
 
 ---

@@ -136,10 +136,10 @@ export const DemoControlsBar: React.FC = () => {
                 ? 'bg-[#88D49E]/15 text-[#88D49E] border-[#88D49E]/50'
                 : 'bg-red-500/15 text-red-300 border-red-500/50'
             }`}
-            title="Toggle Lock 1: Cap enforcement"
+            title="Toggle Lock 3: Sale-Seat Cap enforcement"
           >
             <Lock size={11} />
-            <span>Lock 1: {lock1CapEnabled ? 'ON' : 'OFF'}</span>
+            <span>Lock 3 (Cap): {lock1CapEnabled ? 'ON' : 'OFF'}</span>
           </button>
 
           <button

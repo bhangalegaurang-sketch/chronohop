@@ -217,7 +217,7 @@ export const CheckoutScreen: React.FC = () => {
         </div>
       )}
 
-      {/* Slot Hold Explanation & Guarantees Note */}
+      {/* Slot Hold Explanation Note */}
       <div className="sketch-card rounded-[20px] p-3 text-[11px] text-[#E6E6E6]/60 font-chalk space-y-1">
         <p>• Slot {selectedSlot} is reserved for 5 minutes while you review details.</p>
         <p>• Your card is charged only after you confirm and pay.</p>

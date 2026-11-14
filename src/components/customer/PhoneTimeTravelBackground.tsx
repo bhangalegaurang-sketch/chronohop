@@ -68,24 +68,24 @@ export const PhoneTimeTravelBackground: React.FC = () => {
       // Hand-Drawn Flowing Curved Data Line with Circular Nodes (as per Design Guide)
       ctx.save();
       chalkAngle += 0.002;
-      ctx.strokeStyle = 'rgba(255, 140, 66, 0.22)';
+      ctx.strokeStyle = 'rgba(255, 140, 66, 0.18)';
       ctx.lineWidth = 1.5;
       ctx.setLineDash([6, 6]);
       ctx.beginPath();
-      ctx.moveTo(20, 260 + Math.sin(chalkAngle) * 20);
+      ctx.moveTo(20, 480 + Math.sin(chalkAngle) * 20);
       ctx.bezierCurveTo(
-        110, 200 + Math.cos(chalkAngle) * 30,
-        240, 320 + Math.sin(chalkAngle * 1.2) * 25,
-        370, 240 + Math.cos(chalkAngle) * 20
+        110, 420 + Math.cos(chalkAngle) * 25,
+        240, 520 + Math.sin(chalkAngle * 1.2) * 20,
+        370, 460 + Math.cos(chalkAngle) * 20
       );
       ctx.stroke();
       ctx.setLineDash([]);
 
-      // Nodes on the curved line
+      // Nodes on the curved line (kept away from text areas)
       const nodes = [
-        { x: 45, y: 255 + Math.sin(chalkAngle) * 18, color: '#FF8C42' },
-        { x: 175, y: 250 + Math.sin(chalkAngle * 1.1) * 22, color: '#88D49E' },
-        { x: 310, y: 275 + Math.cos(chalkAngle) * 15, color: '#FF8C42' }
+        { x: 45, y: 475 + Math.sin(chalkAngle) * 18, color: '#FF8C42' },
+        { x: 175, y: 465 + Math.sin(chalkAngle * 1.1) * 20, color: '#88D49E' },
+        { x: 310, y: 490 + Math.cos(chalkAngle) * 15, color: '#FF8C42' }
       ];
       for (const n of nodes) {
         ctx.beginPath();

@@ -32,9 +32,9 @@ export const ProfileScreen: React.FC = () => {
             </h1>
           </div>
 
-          {/* Minimalist smiling mascot face (as per Design Guide Section 4) */}
+          {/* Minimalist verification badge */}
           <div className="w-9 h-9 rounded-full border-2 border-[#88D49E] text-[#88D49E] flex items-center justify-center font-bold text-sm bg-[#1A1A1A] shadow-xs">
-            :)
+            ✓
           </div>
         </div>
 
@@ -79,7 +79,7 @@ export const ProfileScreen: React.FC = () => {
       {/* Supplementary notes grouped in dashed bounding boxes (Design Guide Section 5) */}
       <div className="sketch-dashed rounded-[24px] p-4 space-y-3 text-xs">
         <h2 className="text-xs font-sketch text-[#FF8C42] uppercase tracking-wider">
-          Safety Protocols &amp; Guarantees
+          Safety Protocols
         </h2>
 
         <div className="flex items-center justify-between pb-2 border-b border-[#E6E6E6]/15">
@@ -89,12 +89,12 @@ export const ProfileScreen: React.FC = () => {
 
         <div className="flex items-center justify-between pb-2 border-b border-[#E6E6E6]/15">
           <span className="text-[#E6E6E6]">✓ Comprehensive Travel Insurance</span>
-          <span className="font-bold text-[#88D49E]">$100,000 Included</span>
+          <span className="font-bold text-[#88D49E]">Included</span>
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-[#E6E6E6]">✓ Recovery Window Guarantee</span>
-          <span className="font-bold text-[#FF8C42]">30-Min Return Anchor</span>
+          <span className="text-[#E6E6E6]">✓ Temporal Recovery Window</span>
+          <span className="font-bold text-[#88D49E]">Active</span>
         </div>
       </div>
     </div>

@@ -56,7 +56,7 @@ export const ControllerPage: React.FC = () => {
         </div>
 
         <div className="sketch-card rounded-[22px] p-4 bg-[#202020] text-center relative overflow-hidden">
-          <span className="text-[10px] font-mono text-[#E6E6E6]/60 uppercase block">Lock 1 (Cap Bound)</span>
+          <span className="text-[10px] font-mono text-[#E6E6E6]/60 uppercase block">Lock 3 (Sale-Seat Cap)</span>
           <span className={`text-xl font-sketch font-bold mt-0.5 block ${lock1CapEnabled ? 'text-[#88D49E]' : 'text-red-400'}`}>
             {lock1CapEnabled ? '✓ Enforced' : '⚠ Bypassed'}
           </span>

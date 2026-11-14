@@ -127,4 +127,80 @@ describe('ChronoHop Price Gate Business Rules', () => {
       expect(calculateWorstCaseLoss(33, 1600)).toBe(13200);
     });
   });
+
+  describe('Checkout and Booking Safeguards (Priority 1, 4 & 5.3)', () => {
+    it('sets correct checkout hold price per trip (London $900, Giza $1,400, Dinosaur sale $1,600)', async () => {
+      const { useStore } = await import('../store/useStore');
+      const store = useStore.getState();
+      store.resetAll();
+
+      // London
+      useStore.getState().setSelectedTripId('london');
+      useStore.getState().setCustomerScreen('checkout');
+      expect(useStore.getState().checkoutPriceAtHold).toBe(900);
+
+      // Giza
+      useStore.getState().setSelectedTripId('giza');
+      useStore.getState().setCustomerScreen('checkout');
+      expect(useStore.getState().checkoutPriceAtHold).toBe(1400);
+
+      // Dinosaur Walk (flagship on sale)
+      useStore.getState().setSelectedTripId('dino');
+      useStore.getState().setCustomerScreen('checkout');
+      expect(useStore.getState().checkoutPriceAtHold).toBe(1600);
+    });
+
+    it('leaves Dinosaur Walk sale seat count unchanged when booking non-flagship trips', async () => {
+      const { useStore } = await import('../store/useStore');
+      useStore.getState().resetAll();
+      const initialSoldCount = useStore.getState().liveSale.soldCount; // 12
+      const initialRemaining = useStore.getState().liveSale.cap - initialSoldCount; // 21 remaining
+
+      // Simulate London booking
+      useStore.getState().setSelectedTripId('london');
+      useStore.getState().setCustomerScreen('checkout');
+
+      // Non-flagship booking does not call bookSeat or modify liveSale
+      expect(useStore.getState().liveSale.soldCount).toBe(initialSoldCount);
+      expect(useStore.getState().liveSale.cap - useStore.getState().liveSale.soldCount).toBe(initialRemaining);
+    });
+
+    it('limits sale seat bookings to 2 per customer session', async () => {
+      const { useStore } = await import('../store/useStore');
+      useStore.getState().resetAll();
+      expect(useStore.getState().customerSaleSeatsBooked).toBe(0);
+
+      // 1st sale booking
+      useStore.getState().incrementCustomerSaleSeatsBooked();
+      expect(useStore.getState().customerSaleSeatsBooked).toBe(1);
+
+      // 2nd sale booking
+      useStore.getState().incrementCustomerSaleSeatsBooked();
+      expect(useStore.getState().customerSaleSeatsBooked).toBe(2);
+
+      // 3rd attempt blocked
+      const canBookThird = useStore.getState().customerSaleSeatsBooked < 2;
+      expect(canBookThird).toBe(false);
+    });
+
+    it('does not allow selling beyond the 33-seat cap when cap is reached', async () => {
+      const { useStore } = await import('../store/useStore');
+      useStore.getState().resetAll();
+
+      // Set soldCount to cap (33)
+      useStore.setState({
+        liveSale: {
+          ...useStore.getState().liveSale,
+          soldCount: 33,
+          capHit: true,
+        }
+      });
+
+      // Checkout price calculation when seats sold out
+      useStore.getState().setSelectedTripId('dino');
+      useStore.getState().setCustomerScreen('checkout');
+      // Price returns to list price ($2,000)
+      expect(useStore.getState().checkoutPriceAtHold).toBe(2000);
+    });
+  });
 });

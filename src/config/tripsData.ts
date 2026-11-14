@@ -1,7 +1,6 @@
 import dinoImg from '../assets/dino.jpg';
 import londonImg from '../assets/london.jpg';
 import pyrImg from '../assets/pyramids.jpg';
-import marsImg from '../assets/mars.jpg';
 
 export interface TripDetail {
   id: string;
@@ -127,38 +126,6 @@ export const TRIPS_CATALOG: Record<string, TripDetail> = {
       'Nile Inundation Harbor',
       'Papyrus Logbooks of Merer',
       'ChronoPod Mk IV Shield'
-    ]
-  },
-  mars: {
-    id: 'mars',
-    title: 'Mars Olympus Outpost',
-    shortTitle: 'Mars 2154',
-    era: '2154 CE · Red Planet Colony',
-    location: 'Olympus Mons Caldera & Basin, Mars',
-    heroHeadline: 'Mars has the largest dust storms in the solar system',
-    subtitle: 'A working research colony nestled inside the volcanic shielding of Olympus Mons',
-    image: marsImg,
-    basePrice: 2400,
-    telemetry: {
-      adjectives: 'Martian Frontier / 22nd Century',
-      distance: '249,261,000 km (Orbital Aphelion)',
-      eccentricity: '0.0934',
-      inclination: '1.850° to ecliptic',
-      coordinates: '18.65° N, 226.2° E (Olympus Caldera)',
-      escapeVelocity: '5.027 km/s',
-      axialTilt: '25.19° to orbital plane',
-      atmosphere: '95.3% CO₂ / Pressurized Biosphere Domes',
-      surfaceGravity: '0.38 G (Martian Low-G)',
-      safetyStatus: 'Deep-Space Certified Transit',
-      chronoCoherence: '99.95% Coherent'
-    },
-    observations: 'Guided traverse across the iron oxide dust plains outside the central caldera. Includes low-gravity transit suit, access to the geothermal agricultural rings, and launch viewing from Olympus Spaceport Pad 2.',
-    seeAlso: [
-      'Olympus Caldera Geology',
-      'Subsurface Geothermal Tap',
-      'Low-Gravity Transit Suits',
-      'Solar Storm Shielding',
-      'Interplanetary Telemetry'
     ]
   }
 };

@@ -16,12 +16,9 @@ export const Header: React.FC<HeaderProps> = ({ currentPage = 'customer', onNavi
               <span className="font-marker font-bold text-xl text-[#FFFFFF] tracking-tight">
                 ChronoHop
               </span>
-              <span className="text-xs font-sketch px-2.5 py-0.5 rounded-full bg-[#2A2A2A] border border-[#FF8C42]/50 text-[#FF8C42]">
-                DIGITAL SKETCHBOOK
-              </span>
             </div>
             <p className="text-xs text-[#E6E6E6]/70 font-chalk">
-              Style guide reproduction · Hand-drawn chalkboard aesthetic
+              Curated temporal expeditions
             </p>
           </div>
         </div>
@@ -54,10 +51,6 @@ export const Header: React.FC<HeaderProps> = ({ currentPage = 'customer', onNavi
               </button>
             </div>
           )}
-
-          <span className="hidden md:flex px-3 py-1 rounded-full bg-[#222222] border border-[#88D49E]/50 text-[#88D49E] items-center gap-1.5 shadow-xs">
-            ✓ 4-Locks Price Gate Active
-          </span>
         </div>
       </div>
     </header>

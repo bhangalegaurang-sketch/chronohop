@@ -4,7 +4,6 @@ import { formatMoney } from '../../utils/formatters';
 import dinoImg from '../../assets/dino.jpg';
 import londonImg from '../../assets/london.jpg';
 import pyrImg from '../../assets/pyramids.jpg';
-import marsImg from '../../assets/mars.jpg';
 
 export const ExploreScreen: React.FC = () => {
   const { liveSale, lock1CapEnabled, setCustomerScreen, setSelectedTripId } = useStore();
@@ -19,7 +18,6 @@ export const ExploreScreen: React.FC = () => {
     { id: 'prehistoric', label: 'Prehistoric' },
     { id: 'victorian', label: 'Victorian 1895' },
     { id: 'antiquity', label: 'Ancient Giza' },
-    { id: 'mars', label: 'Mars 2154' },
   ];
 
   const handleOpenTrip = (tripId: string) => {
@@ -45,7 +43,7 @@ export const ExploreScreen: React.FC = () => {
       </div>
 
       {/* 2. EDITORIAL HERO (Travel Time Clean Typography) */}
-      <div className="pt-2 pb-1 space-y-1.5">
+      <div className="pt-2 pb-1 space-y-1.5 relative z-10">
         <h1 className="text-3xl font-marker font-bold leading-tight text-[#FFFFFF] tracking-tight">
           Travel <span className="text-[#FF8C42]">Time</span>
         </h1>
@@ -55,7 +53,7 @@ export const ExploreScreen: React.FC = () => {
       </div>
 
       {/* 3. ERA FILTER NODES (Horizontal Flow with VISIBLE SCROLLBAR) */}
-      <div className="space-y-1">
+      <div className="space-y-1 relative z-10">
         <div className="flex items-center justify-between px-1">
           <span className="text-[11px] font-mono uppercase tracking-wider text-[#E6E6E6]/60">
             Select Historical Epoch
@@ -252,58 +250,6 @@ export const ExploreScreen: React.FC = () => {
             <div className="mt-3 pt-2.5 border-t border-[#E6E6E6]/20 flex items-center justify-between">
               <span className="text-xs font-sketch text-[#E6E6E6]/70">
                 45-min Nile plateau survey
-              </span>
-              <button className="sketch-btn-orange text-xs px-5 py-1.5 rounded-full flex items-center gap-1">
-                <span>BOOK</span>
-                <span>→</span>
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* CARD 4: Mars Olympus Outpost 2154 */}
-        {(activeEraFilter === 'all' || activeEraFilter === 'mars') && (
-          <div
-            onClick={() => handleOpenTrip('mars')}
-            className="sketch-card rounded-[28px] p-4 relative cursor-pointer group transition-all"
-          >
-            <div className="flex items-start justify-between">
-              <div>
-                <h3 className="text-2xl font-marker font-bold text-[#FFFFFF] tracking-tight group-hover:text-[#FF8C42] transition-colors">
-                  Mars Olympus Outpost
-                </h3>
-              </div>
-
-              <div className="text-right">
-                <span className="text-2xl font-bold font-sketch text-[#FF8C42] block leading-tight">
-                  $2,400
-                </span>
-                <span className="text-[10px] text-[#E6E6E6]/50 font-sketch">deep space pod</span>
-              </div>
-            </div>
-
-            <p className="text-xs text-[#E6E6E6]/80 font-chalk mt-1">
-              Humanity’s first red planet research colony nestled inside volcanic shield walls of Olympus Mons.
-            </p>
-
-            <div 
-              className="h-40 rounded-2xl bg-cover bg-center mt-3 relative overflow-hidden border border-[#E6E6E6]/30"
-              style={{ backgroundImage: `url(${marsImg})` }}
-            >
-              <div className="absolute inset-0 bg-gradient-to-t from-[#1A1A1A] via-transparent to-transparent opacity-80" />
-              <div className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between text-xs font-sketch text-[#E6E6E6]">
-                <span className="bg-[#1A1A1A]/80 border border-[#E6E6E6]/40 px-2 py-0.5 rounded-full text-[10px]">
-                  22nd Century Frontier
-                </span>
-                <span className="text-[10px] font-mono text-[#88D49E]">
-                  0.38 G Low Gravity
-                </span>
-              </div>
-            </div>
-
-            <div className="mt-3 pt-2.5 border-t border-[#E6E6E6]/20 flex items-center justify-between">
-              <span className="text-xs font-sketch text-[#E6E6E6]/70">
-                120-min Caldera excursion
               </span>
               <button className="sketch-btn-orange text-xs px-5 py-1.5 rounded-full flex items-center gap-1">
                 <span>BOOK</span>

@@ -214,7 +214,7 @@ export const TripScreen: React.FC = () => {
                 )}
               </div>
 
-              {/* Flagship Price Gate Seat Bar */}
+              {/* Flagship Promotional Seat Bar */}
               {isFlagship && !isPaused && !seatsGone && (
                 <div className="mt-3 pt-3 border-t border-[#E6E6E6]/20 space-y-2">
                   <div className="flex items-center justify-between text-xs text-[#E6E6E6]/80 font-sketch">
