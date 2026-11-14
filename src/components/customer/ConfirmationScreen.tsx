@@ -18,16 +18,16 @@ export const ConfirmationScreen: React.FC = () => {
           {trip.id === 'dino' ? "You're going to the Cretaceous!" : `You're going to ${trip.shortTitle}!`}
         </h1>
         <p className="text-xs text-[#88D49E] font-mono">
-          ✓ Saturday {selectedSlot} · Single Pod Mk IV
+          ✓ Saturday {selectedSlot} · One traveller
         </p>
       </div>
 
       <div className="sketch-dashed rounded-[24px] p-4 text-left text-xs space-y-2 w-full bg-[#202020]">
         <div className="text-[#88D49E] font-bold">
-          ✓ Booking Confirmed &amp; Temporal Anchor Locked
+          ✓ Booking Confirmed
         </div>
         <p className="text-[#E6E6E6]/80 font-chalk leading-relaxed">
-          Your digital boarding pass has been archived. Licensed chrono-navigator assignment and dual return beacon mesh are locked in.
+          Your digital ticket is saved. Your guide and return time are confirmed.
         </p>
       </div>
 

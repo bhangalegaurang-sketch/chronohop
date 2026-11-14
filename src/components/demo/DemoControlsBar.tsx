@@ -1,10 +1,11 @@
 import React, { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { useStore } from '../../store/useStore';
+import { useStore, ROLE_LABELS } from '../../store/useStore';
 import { UserCheck, Zap, Play, User, RotateCcw, Lock } from 'lucide-react';
 
 interface CursorPosition {
   left: number;
+  top: number;
   width: number;
   opacity: number;
 }
@@ -27,19 +28,20 @@ export const DemoControlsBar: React.FC = () => {
 
   const [cursorPosition, setCursorPosition] = useState<CursorPosition>({
     left: 0,
+    top: 0,
     width: 0,
     opacity: 0,
   });
 
   return (
-    <footer className="sticky bottom-3 z-40 px-4 py-2 w-full flex justify-center pointer-events-none select-none font-sketch">
-      {/* Floating Bottom Chin Island Bar */}
-      <div className="pointer-events-auto max-w-6xl w-full bg-[#181818]/95 backdrop-blur-md border border-[#E6E6E6]/30 rounded-2xl sm:rounded-full px-4 py-2.5 shadow-[0_12px_32px_rgba(0,0,0,0.6)] flex items-center justify-between gap-4 text-xs text-[#E6E6E6]">
+    <footer className="sm:sticky bottom-3 z-40 px-0 sm:px-4 py-2 w-full flex justify-center pointer-events-none select-none font-sketch">
+      {/* Floating Bottom Chin Island Bar: wraps onto extra rows instead of clipping */}
+      <div className="pointer-events-auto max-w-6xl w-full bg-[#181818]/95 backdrop-blur-md border border-[#E6E6E6]/30 rounded-2xl px-4 py-2.5 shadow-[0_12px_32px_rgba(0,0,0,0.6)] flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-[#E6E6E6]">
         {/* Left: Section Brand / Status */}
         <div className="flex items-center gap-2 flex-shrink-0">
           <span className="font-sketch font-bold uppercase tracking-wider text-[#FF8C42] flex items-center gap-1.5 text-xs whitespace-nowrap">
             <span>✳</span>
-            <span>SIMULATOR CONTROLS</span>
+            <span>SIMULATOR</span>
           </span>
           {isRushActive && (
             <span className="bg-red-500 text-white text-[10px] font-mono font-bold px-2 py-0.5 rounded-full animate-pulse shadow-xs">
@@ -50,18 +52,19 @@ export const DemoControlsBar: React.FC = () => {
 
         {/* Center: Magnetic Sliding Cursor Floating Tab Group */}
         <ul
-          className="relative flex items-center gap-1 flex-nowrap overflow-x-auto py-1"
+          className="relative flex flex-wrap items-center justify-center gap-1 py-1"
           onMouseLeave={() => setCursorPosition((prev) => ({ ...prev, opacity: 0 }))}
         >
           {/* Animated Magnetic Cursor */}
           <motion.li
             animate={{
               left: cursorPosition.left,
+              top: cursorPosition.top,
               width: cursorPosition.width,
               opacity: cursorPosition.opacity,
             }}
             transition={{ type: "spring", stiffness: 450, damping: 32 }}
-            className="absolute z-0 h-9 rounded-full bg-[#FF8C42]/20 border border-[#FF8C42]/50 shadow-xs pointer-events-none"
+            className="absolute z-0 h-8 rounded-full bg-[#FF8C42]/20 border border-[#FF8C42]/50 shadow-xs pointer-events-none"
           />
 
           {/* Tab 1: One customer books */}
@@ -90,15 +93,16 @@ export const DemoControlsBar: React.FC = () => {
             </span>
           </InteractiveTab>
 
-          {/* Tab 3: Go live now */}
+          {/* Tab 3: Test-only shortcut that skips locks 1-2 */}
           <InteractiveTab
             setCursorPosition={setCursorPosition}
             onClick={forceLiveDemo}
-            title="Fast forward schedule & publish immediately"
+            title="Prototype testing only: puts the current discount live without locks 1 and 2"
+            testOnly
           >
-            <span className="flex items-center gap-1.5 text-[#FF8C42] hover:text-white whitespace-nowrap">
+            <span className="flex items-center gap-1.5 whitespace-nowrap">
               <Play size={14} />
-              Publish Now
+              Test only: skip locks 1–2
             </span>
           </InteractiveTab>
 
@@ -110,7 +114,7 @@ export const DemoControlsBar: React.FC = () => {
           >
             <span className="flex items-center gap-1.5 text-[#88D49E] hover:text-white whitespace-nowrap">
               <User size={14} />
-              Role: {currentRole === 'analyst' ? 'Asha (Analyst)' : 'Marcus (Approver)'}
+              Role: {ROLE_LABELS[currentRole]}
             </span>
           </InteractiveTab>
 
@@ -139,7 +143,7 @@ export const DemoControlsBar: React.FC = () => {
             title="Toggle Lock 3: Sale-Seat Cap enforcement"
           >
             <Lock size={11} />
-            <span>Lock 3 (Cap): {lock1CapEnabled ? 'ON' : 'OFF'}</span>
+            <span>Lock 3: {lock1CapEnabled ? 'ON' : 'OFF'}</span>
           </button>
 
           <button
@@ -166,6 +170,7 @@ interface InteractiveTabProps {
   onClick?: () => void;
   disabled?: boolean;
   title?: string;
+  testOnly?: boolean;
 }
 
 const InteractiveTab: React.FC<InteractiveTabProps> = ({
@@ -174,6 +179,7 @@ const InteractiveTab: React.FC<InteractiveTabProps> = ({
   onClick,
   disabled = false,
   title,
+  testOnly = false,
 }) => {
   const ref = useRef<HTMLLIElement>(null);
 
@@ -185,13 +191,14 @@ const InteractiveTab: React.FC<InteractiveTabProps> = ({
         const { width } = ref.current.getBoundingClientRect();
         setCursorPosition({
           left: ref.current.offsetLeft,
+          top: ref.current.offsetTop + (ref.current.offsetHeight - 32) / 2,
           width,
           opacity: 1,
         });
       }}
-      className={`relative z-10 block cursor-pointer px-3 py-1.5 text-xs font-sketch transition-colors ${
+      className={`relative z-10 block cursor-pointer px-2.5 py-1.5 text-xs font-sketch transition-colors ${
         disabled ? 'opacity-40 cursor-not-allowed' : 'hover:text-white'
-      }`}
+      } ${testOnly ? 'test-only-btn rounded-full' : ''}`}
     >
       <button
         disabled={disabled}

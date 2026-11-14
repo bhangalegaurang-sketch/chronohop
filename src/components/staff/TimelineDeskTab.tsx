@@ -1,9 +1,10 @@
 import React from 'react';
-import { useStore } from '../../store/useStore';
+import { useStore, isSaleOpen } from '../../store/useStore';
 import { DialGauge } from './DialGauge';
 import { SaleSpeedChart } from './SaleSpeedChart';
 import { PRICING_RULES } from '../../config/pricingRules';
 import { formatMoney } from '../../utils/formatters';
+import { calculateLossPerSeat, calculateWorstCaseLoss } from '../../utils/rules';
 import { Play, Pause, XCircle } from 'lucide-react';
 
 export const TimelineDeskTab: React.FC = () => {
@@ -18,17 +19,19 @@ export const TimelineDeskTab: React.FC = () => {
     endSaleEarly
   } = useStore();
 
-  const isSaleActive = liveSale.isActive && !liveSale.isEnded && (!lock1CapEnabled || liveSale.soldCount < liveSale.cap);
-  const currentPrice = isSaleActive ? liveSale.price : PRICING_RULES.LIST_PRICE;
+  const saleOpen = isSaleOpen({ liveSale, lock1CapEnabled });
+  const lowestSold = liveSale.lowestPriceSold;
 
   const rolling5m = recentBookingCounts.reduce((a, b) => a + b, 0);
   const speedRatio = rolling5m / PRICING_RULES.DEMO_FORECAST_5MIN;
-  const priceRatio = Math.round((currentPrice / PRICING_RULES.LIST_PRICE) * 100);
+  const priceRatio = Math.round((lowestSold / PRICING_RULES.LIST_PRICE) * 100);
 
   const isPriceAlarm = priceRatio < 40;
   const isSpeedAlarm = speedRatio > 5.0;
 
-  const currentExposure = liveSale.soldCount * Math.max(0, PRICING_RULES.LIST_PRICE - liveSale.price);
+  // Exposure counts sale-price seats only; bookings past the cap pay $2,000
+  const currentExposure = liveSale.soldCount * calculateLossPerSeat(liveSale.price);
+  const maxExposure = calculateWorstCaseLoss(liveSale.cap, liveSale.price);
 
   return (
     <div className="space-y-4 p-4 text-[#E6E6E6] font-sketch select-none">
@@ -38,7 +41,7 @@ export const TimelineDeskTab: React.FC = () => {
         <DialGauge
           label="BOOKINGS PER SLOT (MAX 1)"
           value="1"
-          subtext="Dedicated slots: each departure window holds an exclusive return beacon."
+          subtext="Each 30-minute departure slot holds one traveller."
           pct={100}
           isAlarm={false}
         />
@@ -47,7 +50,7 @@ export const TimelineDeskTab: React.FC = () => {
         <DialGauge
           label="LOWEST PRICE SOLD VS LIST"
           value={`${priceRatio}%`}
-          subtext={`${formatMoney(currentPrice)} of $2,000. Alarm below 40%.`}
+          subtext={`${formatMoney(lowestSold)} of $2,000 (lowest actually sold). Alarm below 40%.`}
           pct={priceRatio}
           isAlarm={isPriceAlarm}
         />
@@ -65,7 +68,7 @@ export const TimelineDeskTab: React.FC = () => {
       {/* Real-time Velocity Chart */}
       <SaleSpeedChart data={speedHistory} />
 
-      {/* Mission Control Status & Emergency Actions */}
+      {/* Listing Status & Emergency Actions */}
       <div className="sketch-card rounded-[24px] p-5 space-y-4 bg-[#202020]">
         <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-[#E6E6E6]/20">
           <div>
@@ -80,6 +83,12 @@ export const TimelineDeskTab: React.FC = () => {
           <div className="flex items-center gap-3">
             <span className="text-xs font-mono">
               Total promo exposure: <strong className="text-[#FF8C42]">{formatMoney(currentExposure)}</strong>
+              <span className="text-[#E6E6E6]/60"> of {formatMoney(maxExposure)} max</span>
+            </span>
+            <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border ${
+              saleOpen ? 'bg-[#88D49E]/15 text-[#88D49E] border-[#88D49E]/40' : 'bg-red-500/15 text-red-300 border-red-500/40'
+            }`}>
+              {saleOpen ? (liveSale.isPaused ? 'PAUSED' : 'SALE LIVE') : 'SALE OVER · $2,000'}
             </span>
           </div>
         </div>
@@ -106,7 +115,8 @@ export const TimelineDeskTab: React.FC = () => {
 
           <button
             onClick={endSaleEarly}
-            className="py-3 px-4 rounded-full border border-[#E6E6E6]/30 bg-[#1A1A1A] hover:bg-[#2A2A2A] text-xs text-[#E6E6E6] font-bold flex items-center justify-center gap-2 transition-colors shadow-xs"
+            disabled={!saleOpen}
+            className="py-3 px-4 rounded-full border border-[#E6E6E6]/30 bg-[#1A1A1A] hover:bg-[#2A2A2A] text-xs text-[#E6E6E6] font-bold flex items-center justify-center gap-2 transition-colors shadow-xs disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <XCircle size={15} className="text-[#FF8C42]" />
             <span>END PROMO EARLY (RESTORE $2,000 LIST)</span>

@@ -65,7 +65,7 @@ export const TimeTravelBackground: React.FC = () => {
     const render = () => {
       ctx.clearRect(0, 0, width, height);
 
-      // Deep space temporal vortex backdrop
+      // Temporal vortex backdrop
       const radialGradient = ctx.createRadialGradient(
         centerX,
         centerY,

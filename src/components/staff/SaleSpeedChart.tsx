@@ -27,57 +27,63 @@ export const SaleSpeedChart: React.FC<SaleSpeedChartProps> = ({ data }) => {
         </div>
       </div>
 
-      {/* Chart Canvas */}
-      <div className="relative h-28 w-full pt-4 pb-6 px-2 flex items-end justify-between gap-3 border-b border-[#E6E6E6]/20">
-        {/* Forecast Horizontal Guideline */}
-        <div
-          className="absolute left-0 right-0 border-b border-dashed border-[#88D49E]/50 pointer-events-none"
-          style={{ bottom: `${forecastY}%` }}
-        >
-          <span className="absolute right-1 -top-3 text-[9px] font-mono text-[#88D49E]">
-            fcst (6)
-          </span>
-        </div>
+      {/* Chart Canvas: bars and guide lines share one plot area, so they use the same scale */}
+      <div className="px-2">
+        <div className="relative h-24 w-full flex items-end justify-between gap-3 border-b border-[#E6E6E6]/20">
+          {/* Forecast Horizontal Guideline */}
+          <div
+            className="absolute left-0 right-0 border-b border-dashed border-[#88D49E]/70 pointer-events-none z-10"
+            style={{ bottom: `${forecastY}%` }}
+          >
+            <span className="absolute right-1 -top-3 text-[9px] font-mono text-[#88D49E]">
+              fcst (6)
+            </span>
+          </div>
 
-        {/* Breaker 5x Guideline */}
-        <div
-          className="absolute left-0 right-0 border-b-2 border-dashed border-[#FF8C42]/80 pointer-events-none z-10"
-          style={{ bottom: `${breakerY}%` }}
-        >
-          <span className="absolute right-1 -top-3 text-[9px] font-mono text-[#FF8C42] font-bold">
-            breaker 5x (30)
-          </span>
-        </div>
+          {/* Breaker 5x Guideline */}
+          <div
+            className="absolute left-0 right-0 border-b-2 border-dashed border-[#FF8C42]/80 pointer-events-none z-10"
+            style={{ bottom: `${breakerY}%` }}
+          >
+            <span className="absolute right-1 -top-3 text-[9px] font-mono text-[#FF8C42] font-bold">
+              breaker 5x (30)
+            </span>
+          </div>
 
-        {/* Dynamic Bars */}
-        {data.map((item) => {
-          const heightPct = Math.min(100, Math.max(8, (item.bookings / maxVal) * 100));
-          const isBreached = item.bookings > PRICING_RULES.DEMO_BREAKER_THRESHOLD;
+          {/* Dynamic Bars */}
+          {data.map((item) => {
+            const heightPct = Math.min(100, (item.bookings / maxVal) * 100);
+            const isBreached = item.bookings > PRICING_RULES.DEMO_BREAKER_THRESHOLD;
 
-          return (
-            <div key={item.id} className="flex-1 flex flex-col items-center h-full justify-end group relative">
-              {/* Tooltip on hover */}
-              <div className="absolute -top-6 bg-black/90 text-white font-mono text-[10px] px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20 shadow-md">
-                {item.bookings} bookings ({item.label})
+            return (
+              <div key={item.id} className="flex-1 flex flex-col items-center h-full justify-end group relative">
+                {/* Tooltip on hover */}
+                <div className="absolute -top-6 bg-black/90 text-white font-mono text-[10px] px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20 shadow-md whitespace-nowrap">
+                  {item.bookings} bookings ({item.label})
+                </div>
+
+                {/* Bar element */}
+                <div
+                  className={`w-full max-w-[28px] rounded-t-lg transition-all duration-300 ${
+                    isBreached
+                      ? 'bg-red-500 shadow-[0_0_8px_rgba(229,72,77,0.5)]'
+                      : 'bg-[#FF8C42] hover:bg-[#FFA86E]'
+                  }`}
+                  style={{ height: `${heightPct}%` }}
+                />
               </div>
+            );
+          })}
+        </div>
 
-              {/* Bar element */}
-              <div
-                className={`w-full max-w-[28px] rounded-t-lg transition-all duration-300 ${
-                  isBreached
-                    ? 'bg-red-500 shadow-[0_0_8px_rgba(229,72,77,0.5)]'
-                    : 'bg-[#FF8C42] hover:bg-[#FFA86E]'
-                }`}
-                style={{ height: `${heightPct}%` }}
-              />
-
-              {/* Time Label */}
-              <span className="text-[9px] font-mono text-[#E6E6E6]/50 mt-1">
-                {item.label}
-              </span>
-            </div>
-          );
-        })}
+        {/* Time Labels */}
+        <div className="flex justify-between gap-3 mt-1">
+          {data.map((item) => (
+            <span key={item.id} className="flex-1 text-center text-[9px] font-mono text-[#E6E6E6]/50">
+              {item.label}
+            </span>
+          ))}
+        </div>
       </div>
     </div>
   );

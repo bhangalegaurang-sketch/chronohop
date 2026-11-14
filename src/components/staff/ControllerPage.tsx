@@ -1,13 +1,16 @@
 import React from 'react';
 import { StaffConsole } from './StaffConsole';
 import { DemoControlsBar } from '../demo/DemoControlsBar';
-import { useStore } from '../../store/useStore';
+import { useStore, isSaleOpen, ROLE_LABELS } from '../../store/useStore';
 import { formatMoney } from '../../utils/formatters';
 
 export const ControllerPage: React.FC = () => {
   const { liveSale, lock1CapEnabled, lock4BreakerEnabled, currentRole, switchRole } = useStore();
 
   const remaining = Math.max(0, liveSale.cap - liveSale.soldCount);
+  const saleOpen = isSaleOpen({ liveSale, lock1CapEnabled });
+  const saleOver = liveSale.isActive && !saleOpen;
+  const totalBookings = liveSale.soldCount + liveSale.fullPriceCount;
 
   return (
     <div className="w-full max-w-6xl mx-auto flex flex-col items-center space-y-5 pb-24 select-none font-sketch text-[#E6E6E6]">
@@ -15,11 +18,11 @@ export const ControllerPage: React.FC = () => {
       <div className="flex flex-wrap items-center justify-between w-full px-4 text-xs text-[#E6E6E6]/70">
         <div className="flex items-center gap-3">
           <span className="flex items-center gap-1.5 text-sm text-[#FF8C42] font-bold">
-            ✎ MISSION CONTROL · FOUR-LOCKS PRICE GATE
+            ✎ PRICING CONTROL ROOM · FOUR-LOCK PRICE GATE
           </span>
           <span className="text-[#E6E6E6]/40 hidden sm:inline">|</span>
           <span className="text-[#88D49E] text-xs hidden sm:inline">
-            Active Operator: <strong className="text-white">{currentRole === 'analyst' ? 'Asha (Pricing Analyst)' : 'Marcus (Finance Approver)'}</strong>
+            Active Operator: <strong className="text-white">{ROLE_LABELS[currentRole]}</strong>
           </span>
         </div>
 
@@ -28,7 +31,7 @@ export const ControllerPage: React.FC = () => {
             onClick={() => switchRole()}
             className="sketch-btn-orange text-xs px-3.5 py-1 rounded-full shadow-xs"
           >
-            Switch to {currentRole === 'analyst' ? 'Marcus (Approver)' : 'Asha (Analyst)'}
+            Switch to {ROLE_LABELS[currentRole === 'analyst' ? 'approver' : 'analyst']}
           </button>
         </div>
       </div>
@@ -38,20 +41,22 @@ export const ControllerPage: React.FC = () => {
         <div className="sketch-card rounded-[22px] p-4 bg-[#202020] text-center relative overflow-hidden">
           <span className="text-[10px] font-mono text-[#E6E6E6]/60 uppercase block">Active Sale Price</span>
           <span className="text-2xl font-mono font-bold text-[#FF8C42] mt-0.5 block">
-            {liveSale.isActive ? formatMoney(liveSale.price) : '$2,000'}
+            {saleOpen ? formatMoney(liveSale.price) : '$2,000'}
           </span>
-          <span className="text-[10px] text-[#88D49E] font-chalk block mt-0.5">
-            {liveSale.isActive ? `${liveSale.discountPct}% Discount Live` : 'Standard Catalog'}
+          <span className={`text-[10px] font-chalk block mt-0.5 ${saleOver ? 'text-red-300' : 'text-[#88D49E]'}`}>
+            {saleOpen
+              ? (liveSale.isPaused ? `${liveSale.discountPct}% Sale · Paused` : `${liveSale.discountPct}% Discount Live`)
+              : saleOver ? 'Sale over' : 'Standard Catalog'}
           </span>
         </div>
 
         <div className="sketch-card rounded-[22px] p-4 bg-[#202020] text-center relative overflow-hidden">
-          <span className="text-[10px] font-mono text-[#E6E6E6]/60 uppercase block">Promo Seats</span>
+          <span className="text-[10px] font-mono text-[#E6E6E6]/60 uppercase block">Sale Seats Left</span>
           <span className="text-2xl font-mono font-bold text-[#88D49E] mt-0.5 block">
             {remaining} / {liveSale.cap}
           </span>
           <span className="text-[10px] text-[#E6E6E6]/60 font-chalk block mt-0.5">
-            {liveSale.soldCount} Bookings Sold
+            {totalBookings} sold · {liveSale.soldCount} sale, {liveSale.fullPriceCount} at $2,000
           </span>
         </div>
 
@@ -61,7 +66,7 @@ export const ControllerPage: React.FC = () => {
             {lock1CapEnabled ? '✓ Enforced' : '⚠ Bypassed'}
           </span>
           <span className="text-[10px] text-[#E6E6E6]/60 font-chalk block mt-0.5">
-            Max 33 Window Seats
+            Max {liveSale.cap} sale seats
           </span>
         </div>
 

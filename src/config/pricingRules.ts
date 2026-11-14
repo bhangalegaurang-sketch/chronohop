@@ -1,7 +1,6 @@
 /**
- * ChronoHop Price Gate Business Rules & PRD Assumptions
- * 
- * Source of truth: PRD — ChronoHop Price Gate (Draft Nov 13, 2026)
+ * ChronoHop Price Gate business rules and assumptions
+ *
  * All thresholds below are documented assumptions to be tuned with real data.
  */
 
@@ -9,10 +8,12 @@ export const PRICING_RULES = {
   // Trip & Inventory
   TRIP_NAME: 'Dinosaur Walk (Flagship)',
   LIST_PRICE: 2000,
+  LOWEST_EVER_SOLD: 1500, // Lowest price this trip has ever sold for (25% off)
   DAYS_IN_WINDOW: 7,
   SLOTS_PER_DAY: 48, // 30-minute slots per day
   WINDOW_SEATS: 336, // 7 days * 48 slots = 336 seats
-  LOSS_PER_SEAT_AT_TYPO: 1940, // Base loss per seat if typed as $2 or extreme typo ($2,000 - $60 floor)
+  LOSS_PER_SEAT_AT_TYPO: 1940, // Loss per seat at $2: $1,998 less the 2.9% card fee
+  CARD_FEE_PCT: 2.9, // Card processing fee, netted out of the loss per seat
   MAX_SEATS_PER_CUSTOMER: 2, // 2 sale seats per account and card per sale
 
   // Cap Rule Parameters
@@ -25,8 +26,8 @@ export const PRICING_RULES = {
   // Approval Bands
   BAND_1_MAX_PCT: 30.0, // 0 to 30%: 1 person (requester alone)
   BAND_2_MAX_PCT: 60.0, // >30% to 60%: 2 people (requires second approver)
-  // Over 60%: Blocked unless Finance Lead & Founder both approve with written reason
-  // Negative percent or price above list: Blocked the same way
+  // Over 60%: Blocked here; finance lead + founder approve outside this screen
+  // Empty, negative or over 100%: rejected as invalid input
 
   // Scheduling & Approvals
   FLAGSHIP_MIN_SCHEDULE_HOURS: 24, // Minimum 24 hours after approval for flagship trips

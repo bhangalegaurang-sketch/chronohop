@@ -7,7 +7,8 @@ import {
   getApprovalBand,
   checkBreakerTriggered,
   verifyRetypedPrice,
-  calculateWorstCaseLoss
+  calculateWorstCaseLoss,
+  isScheduleValid
 } from '../utils/rules';
 import { formatMoney } from '../utils/formatters';
 
@@ -23,10 +24,16 @@ export type CustomerScreenType =
   | 'waitlist';
 export type StaffTabType = 'gate' | 'approvals' | 'desk';
 
+export const ROLE_LABELS: Record<UserRole, string> = {
+  analyst: 'Asha (Analyst)',
+  approver: 'Marcus (Approver)',
+};
+
 export interface PendingApproval {
   id: string;
   tripName: string;
   requester: string;
+  requestedBy: UserRole;
   discountPct: number;
   price: number;
   cap: number;
@@ -64,9 +71,6 @@ export interface AppStore {
   budget: number;
   customCap: number | null;
   scheduledTime: string;
-  overrideReason: string;
-  financeLeadApproved: boolean;
-  founderApproved: boolean;
 
   // Live Sale State
   liveSale: {
@@ -74,7 +78,9 @@ export interface AppStore {
     discountPct: number;
     price: number;
     cap: number;
-    soldCount: number;
+    soldCount: number; // sale-price seats only
+    fullPriceCount: number; // bookings at $2,000 after the cap was hit or the sale ended
+    lowestPriceSold: number;
     isPaused: boolean;
     isEnded: boolean;
     capHit: boolean;
@@ -115,9 +121,6 @@ export interface AppStore {
   setBudget: (budget: number) => void;
   setCustomCap: (cap: number | null) => void;
   setScheduledTime: (time: string) => void;
-  setOverrideReason: (reason: string) => void;
-  toggleFinanceLeadApproved: () => void;
-  toggleFounderApproved: () => void;
   switchRole: (role?: UserRole) => void;
 
   // Pricing Gate Actions
@@ -151,6 +154,40 @@ export interface AppStore {
   addLog: (message: string, type?: LogEntry['type']) => void;
 }
 
+// datetime-local value 25 hours from now, so the default passes the 24h flagship rule
+export const getDefaultScheduleTime = (): string => {
+  const d = new Date(Date.now() + 25 * 60 * 60 * 1000);
+  d.setSeconds(0, 0);
+  const pad = (n: number) => n.toString().padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+};
+
+const newLiveSale = (discountPct: number, price: number, cap: number): AppStore['liveSale'] => ({
+  isActive: true,
+  discountPct,
+  price,
+  cap,
+  soldCount: 0,
+  fullPriceCount: 0,
+  lowestPriceSold: PRICING_RULES.LIST_PRICE,
+  isPaused: false,
+  isEnded: false,
+  capHit: false,
+});
+
+const getSeededLiveSale = (): AppStore['liveSale'] => ({
+  ...newLiveSale(20, 1600, 33),
+  soldCount: 12,
+  lowestPriceSold: 1600,
+});
+
+/**
+ * True while sale-price seats can still be sold: the sale is live, not ended,
+ * and (when Lock 3 is on) seats remain under the cap.
+ */
+export const isSaleOpen = (s: Pick<AppStore, 'liveSale' | 'lock1CapEnabled'>): boolean =>
+  s.liveSale.isActive && !s.liveSale.isEnded && (!s.lock1CapEnabled || s.liveSale.soldCount < s.liveSale.cap);
+
 const getNowTime = () => new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
 const getInitialSpeedHistory = (): SpeedDataPoint[] => [
@@ -173,21 +210,9 @@ export const useStore = create<AppStore>((set, get) => ({
   sharePct: 10,
   budget: 100000,
   customCap: null,
-  scheduledTime: 'Tomorrow at 07:40 (24h+ scheduled)',
-  overrideReason: '',
-  financeLeadApproved: false,
-  founderApproved: false,
+  scheduledTime: getDefaultScheduleTime(),
 
-  liveSale: {
-    isActive: true,
-    discountPct: 20,
-    price: 1600,
-    cap: 33,
-    soldCount: 12,
-    isPaused: false,
-    isEnded: false,
-    capHit: false,
-  },
+  liveSale: getSeededLiveSale(),
 
   recentBookingCounts: [2, 3, 3, 2, 2],
   speedHistory: getInitialSpeedHistory(),
@@ -239,7 +264,7 @@ export const useStore = create<AppStore>((set, get) => ({
     if (screen === 'checkout') {
       const trip = TRIPS_CATALOG[state.selectedTripId] || TRIPS_CATALOG.dino;
       const isFlagship = Boolean(trip.isFlagship);
-      const isSaleValid = isFlagship && state.liveSale.isActive && !state.liveSale.isEnded && (!state.lock1CapEnabled || state.liveSale.soldCount < state.liveSale.cap);
+      const isSaleValid = isFlagship && isSaleOpen(state);
       const heldPrice = isSaleValid ? state.liveSale.price : trip.basePrice;
       set({
         customerScreen: screen,
@@ -257,19 +282,16 @@ export const useStore = create<AppStore>((set, get) => ({
   setSelectedTripId: (tripId) => set({ selectedTripId: tripId }),
   setShowFairPriceSheet: (show) => set({ showFairPriceSheet: show }),
 
-  setDiscountPct: (pct) => set({ discountPct: Math.round(pct * 10) / 10 }),
+  setDiscountPct: (pct) => set({ discountPct: isNaN(pct) ? NaN : Math.round(pct * 10) / 10 }),
   setSharePct: (share) => set({ sharePct: share }),
   setBudget: (budget) => set({ budget }),
   setCustomCap: (cap) => set({ customCap: cap }),
   setScheduledTime: (time) => set({ scheduledTime: time }),
-  setOverrideReason: (reason) => set({ overrideReason: reason }),
-  toggleFinanceLeadApproved: () => set((state) => ({ financeLeadApproved: !state.financeLeadApproved })),
-  toggleFounderApproved: () => set((state) => ({ founderApproved: !state.founderApproved })),
 
   switchRole: (role) => {
     const nextRole = role || (get().currentRole === 'analyst' ? 'approver' : 'analyst');
     set({ currentRole: nextRole });
-    get().addLog(`Switched active staff view to: ${nextRole.toUpperCase()}`);
+    get().addLog(`Switched active staff account to ${ROLE_LABELS[nextRole]}.`);
   },
 
   scheduleSale: () => {
@@ -278,12 +300,24 @@ export const useStore = create<AppStore>((set, get) => ({
     const salePrice = calculatePrice(state.discountPct);
     const cap = getEffectiveCap(state.sharePct, state.budget, state.customCap);
 
+    if (band === 'invalid') {
+      get().addLog('REJECTED: Discount must be between 0% and 100%.', 'alert');
+      return;
+    }
+
     if (band === 'blocked') {
-      // Must have written reason + finance lead + founder
-      if (!state.overrideReason.trim() || !state.financeLeadApproved || !state.founderApproved) {
-        get().addLog(`BLOCKED: Discount ${state.discountPct}% requires written justification and dual approvals.`, 'alert');
-        return;
-      }
+      get().addLog(`BLOCKED: ${state.discountPct}% off needs finance lead + founder approval outside this screen.`, 'alert');
+      return;
+    }
+
+    if (cap <= 0) {
+      get().addLog('REJECTED: Sale-seat cap is 0, so the sale cannot run.', 'alert');
+      return;
+    }
+
+    if (!isScheduleValid(state.scheduledTime)) {
+      get().addLog('REJECTED: Flagship sales must be scheduled at least 24 hours ahead.', 'alert');
+      return;
     }
 
     if (band === 'band_2') {
@@ -291,22 +325,13 @@ export const useStore = create<AppStore>((set, get) => ({
       return;
     }
 
-    // Schedule sale
+    // Schedule sale (the prototype fast-forwards to the start time)
     set({
-      liveSale: {
-        isActive: true,
-        discountPct: state.discountPct,
-        price: salePrice,
-        cap,
-        soldCount: 0,
-        isPaused: false,
-        isEnded: false,
-        capHit: false,
-      },
+      liveSale: newLiveSale(state.discountPct, salePrice, cap),
       staffTab: 'desk',
     });
 
-    get().addLog(`Sale scheduled & live: ${state.discountPct}% off (${formatMoney(salePrice)}). Cap: ${cap} sale seats.`, 'success');
+    get().addLog(`Sale scheduled for ${new Date(state.scheduledTime).toLocaleString('en-US')}: ${state.discountPct}% off (${formatMoney(salePrice)}). Cap: ${cap} sale seats. Prototype starts it now.`, 'success');
   },
 
   sendToApprover: () => {
@@ -319,7 +344,8 @@ export const useStore = create<AppStore>((set, get) => ({
       pendingApproval: {
         id: Math.random().toString(36).substring(2, 7),
         tripName: PRICING_RULES.TRIP_NAME,
-        requester: 'Asha (Pricing Analyst)',
+        requester: ROLE_LABELS[state.currentRole],
+        requestedBy: state.currentRole,
         discountPct: state.discountPct,
         price: salePrice,
         cap,
@@ -332,7 +358,7 @@ export const useStore = create<AppStore>((set, get) => ({
       staffTab: 'approvals',
     });
 
-    get().addLog(`Sent to second approver: ${state.discountPct}% off (${formatMoney(salePrice)}). Worst case: ${formatMoney(worstCase)}.`, 'normal');
+    get().addLog(`${ROLE_LABELS[state.currentRole]} sent ${state.discountPct}% off (${formatMoney(salePrice)}) for a second look. Worst case: ${formatMoney(worstCase)}.`, 'normal');
   },
 
   forceLiveDemo: () => {
@@ -340,22 +366,18 @@ export const useStore = create<AppStore>((set, get) => ({
     const salePrice = calculatePrice(state.discountPct);
     const cap = getEffectiveCap(state.sharePct, state.budget, state.customCap);
 
+    if (getApprovalBand(state.discountPct) === 'invalid') {
+      get().addLog('TEST ONLY: Enter a discount between 0% and 100% first.', 'alert');
+      return;
+    }
+
     set({
-      liveSale: {
-        isActive: true,
-        discountPct: state.discountPct,
-        price: salePrice,
-        cap,
-        soldCount: 0,
-        isPaused: false,
-        isEnded: false,
-        capHit: false,
-      },
+      liveSale: newLiveSale(state.discountPct, salePrice, cap),
       customerScreen: 'trip',
       staffTab: 'desk',
     });
 
-    get().addLog(`DEMO OVERRIDE: Locks 1 and 2 bypassed! Live at ${state.discountPct}% off (${formatMoney(salePrice)}). Cap: ${cap} seats.`, 'alert');
+    get().addLog(`TEST ONLY: Locks 1 and 2 skipped. Live at ${state.discountPct}% off (${formatMoney(salePrice)}). Cap: ${cap} seats.`, 'alert');
   },
 
   setRetypeInput: (val) => set({ retypeInput: val, retypeError: null }),
@@ -364,9 +386,9 @@ export const useStore = create<AppStore>((set, get) => ({
     const state = get();
     if (!state.pendingApproval) return false;
 
-    // Check account identity (approver must not be analyst)
-    if (state.currentRole !== 'approver') {
-      set({ retypeError: 'Identity error: Requester cannot self-approve. Switch to Approver role.' });
+    // Check account identity (approver must be a different person from the requester)
+    if (state.currentRole === state.pendingApproval.requestedBy) {
+      set({ retypeError: 'You sent this request, so you cannot approve it. A different account must approve.' });
       get().addLog('REJECTED: Requester attempted self-approval. Different account mandatory.', 'alert');
       return false;
     }
@@ -395,16 +417,7 @@ export const useStore = create<AppStore>((set, get) => ({
     // Success! Schedule sale
     const approved = state.pendingApproval;
     set({
-      liveSale: {
-        isActive: true,
-        discountPct: approved.discountPct,
-        price: approved.price,
-        cap: approved.cap,
-        soldCount: 0,
-        isPaused: false,
-        isEnded: false,
-        capHit: false,
-      },
+      liveSale: newLiveSale(approved.discountPct, approved.price, approved.cap),
       pendingApproval: null,
       retypeInput: '',
       retypeAttemptsRemaining: PRICING_RULES.MAX_RETYPE_ATTEMPTS,
@@ -412,7 +425,7 @@ export const useStore = create<AppStore>((set, get) => ({
       staffTab: 'desk',
     });
 
-    get().addLog(`Approved & Scheduled: ${approved.tripName} at ${approved.discountPct}% off (${formatMoney(approved.price)}). Cap: ${approved.cap}.`, 'success');
+    get().addLog(`${ROLE_LABELS[state.currentRole]} approved ${approved.tripName} at ${approved.discountPct}% off (${formatMoney(approved.price)}), requested by ${approved.requester}. Cap: ${approved.cap}.`, 'success');
     return true;
   },
 
@@ -455,15 +468,19 @@ export const useStore = create<AppStore>((set, get) => ({
       return false;
     }
 
+    const { cap, price } = state.liveSale;
     const currentSold = state.liveSale.soldCount;
-    const newTotalSold = currentSold + count;
-    const cap = state.liveSale.cap;
 
-    // Check Lock 1 Cap
-    let capJustHit = false;
-    if (state.lock1CapEnabled && newTotalSold >= cap && !state.liveSale.capHit) {
-      capJustHit = true;
+    // Split the burst: sale seats up to the cap (Lock 3), the rest at full price
+    let saleSeats = 0;
+    if (isSaleOpen(state)) {
+      saleSeats = state.lock1CapEnabled ? Math.min(count, Math.max(0, cap - currentSold)) : count;
     }
+    const fullPriceSeats = count - saleSeats;
+    const newSaleSold = currentSold + saleSeats;
+
+    // Check Lock 3 Cap
+    const capJustHit = state.lock1CapEnabled && newSaleSold >= cap && !state.liveSale.capHit && state.liveSale.isActive && !state.liveSale.isEnded;
 
     // Update rolling bookings
     const newRecent = [...state.recentBookingCounts.slice(-4), count];
@@ -479,17 +496,22 @@ export const useStore = create<AppStore>((set, get) => ({
     set((s) => ({
       liveSale: {
         ...s.liveSale,
-        soldCount: newTotalSold,
+        soldCount: newSaleSold,
+        fullPriceCount: s.liveSale.fullPriceCount + fullPriceSeats,
+        lowestPriceSold: saleSeats > 0 ? Math.min(s.liveSale.lowestPriceSold, price) : s.liveSale.lowestPriceSold,
         capHit: s.liveSale.capHit || capJustHit,
       },
       recentBookingCounts: newRecent,
       speedHistory: currentHist,
     }));
 
-    // Trigger Lock 1 notification
+    // Trigger Lock 3 notification
     if (capJustHit) {
-      const maxLoss = calculateWorstCaseLoss(cap, state.liveSale.price);
+      const maxLoss = calculateWorstCaseLoss(cap, price);
       get().addLog(`LOCK 3: All ${cap} sale seats sold! Price returns to $2,000. Maximum loss capped at ${formatMoney(maxLoss)}.`, 'lock');
+    }
+    if (fullPriceSeats > 0) {
+      get().addLog(`${fullPriceSeats} booking${fullPriceSeats === 1 ? '' : 's'} charged at full price ($2,000): sale is over.`, 'normal');
     }
 
     // Check Lock 4 Speed Breaker
@@ -554,20 +576,8 @@ export const useStore = create<AppStore>((set, get) => ({
       sharePct: 10,
       budget: 100000,
       customCap: null,
-      scheduledTime: 'Tomorrow at 07:40 (24h+ scheduled)',
-      overrideReason: '',
-      financeLeadApproved: false,
-      founderApproved: false,
-      liveSale: {
-        isActive: true,
-        discountPct: 20,
-        price: 1600,
-        cap: 33,
-        soldCount: 12,
-        isPaused: false,
-        isEnded: false,
-        capHit: false,
-      },
+      scheduledTime: getDefaultScheduleTime(),
+      liveSale: getSeededLiveSale(),
       recentBookingCounts: [2, 3, 3, 2, 2],
       speedHistory: getInitialSpeedHistory(),
       pendingApproval: null,

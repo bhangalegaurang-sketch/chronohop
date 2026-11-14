@@ -6,7 +6,9 @@ import {
   getApprovalBand,
   checkBreakerTriggered,
   verifyRetypedPrice,
-  calculateWorstCaseLoss
+  calculateWorstCaseLoss,
+  calculateLossPerSeat,
+  isScheduleValid
 } from '../utils/rules';
 import { numberToWords, formatMoney } from '../utils/formatters';
 
@@ -41,10 +43,15 @@ describe('ChronoHop Price Gate Business Rules', () => {
       // Staff tries to raise to 50, but rule caps it at 33
       expect(getEffectiveCap(10, 100000, 50)).toBe(ruleCap);
     });
+
+    it('gives a cap of 0 when the loss budget is $0', () => {
+      expect(calculateRuleCap(10, 0)).toBe(0);
+    });
   });
 
   describe('Approval Bands', () => {
     it('allows 0% to 30% for requester alone (band_1)', () => {
+      expect(getApprovalBand(0)).toBe('band_1');
       expect(getApprovalBand(5)).toBe('band_1');
       expect(getApprovalBand(20)).toBe('band_1');
       expect(getApprovalBand(30)).toBe('band_1');
@@ -62,10 +69,10 @@ describe('ChronoHop Price Gate Business Rules', () => {
       expect(getApprovalBand(100)).toBe('blocked');
     });
 
-    it('blocks prices above list price or negative discount', () => {
-      expect(getApprovalBand(0)).toBe('blocked');
-      expect(getApprovalBand(-10)).toBe('blocked');
-      expect(getApprovalBand(105)).toBe('blocked');
+    it('rejects empty, negative and over-100% input as invalid', () => {
+      expect(getApprovalBand(NaN)).toBe('invalid');
+      expect(getApprovalBand(-5)).toBe('invalid');
+      expect(getApprovalBand(150)).toBe('invalid');
     });
   });
 
@@ -122,9 +129,19 @@ describe('ChronoHop Price Gate Business Rules', () => {
       expect(formatMoney(2)).toBe('$2.00');
     });
 
-    it('calculates worst-case loss properly', () => {
-      // 33 seats * ($2000 - $1600 = $400) = $13,200
-      expect(calculateWorstCaseLoss(33, 1600)).toBe(13200);
+    it('calculates worst-case loss net of the 2.9% card fee', () => {
+      // $2 price: $1,998 x 0.971 = $1,940 per seat; 33 seats = $64,020
+      expect(calculateLossPerSeat(2)).toBe(1940);
+      expect(calculateWorstCaseLoss(33, 2)).toBe(64020);
+      // $1,600 price: $400 x 0.971 = $388 per seat
+      expect(calculateWorstCaseLoss(33, 1600)).toBe(33 * 388);
+    });
+
+    it('rejects a schedule under 24 hours away', () => {
+      const now = new Date('2026-11-15T10:00:00');
+      expect(isScheduleValid('2026-11-16T10:00', now)).toBe(true);
+      expect(isScheduleValid('2026-11-16T09:59', now)).toBe(false);
+      expect(isScheduleValid('yesterday 3am', now)).toBe(false);
     });
   });
 
@@ -201,6 +218,78 @@ describe('ChronoHop Price Gate Business Rules', () => {
       useStore.getState().setCustomerScreen('checkout');
       // Price returns to list price ($2,000)
       expect(useStore.getState().checkoutPriceAtHold).toBe(2000);
+    });
+  });
+
+  describe('Controller page fixes', () => {
+    it('never sells more than the cap at the sale price during a burst (Lock 3 on)', async () => {
+      const { useStore } = await import('../store/useStore');
+      useStore.getState().resetAll();
+      useStore.setState({ lock4BreakerEnabled: false });
+      useStore.getState().setDiscountPct(45);
+      useStore.getState().forceLiveDemo();
+
+      useStore.getState().bookSeat(4);
+      useStore.getState().bookSeat(10);
+      useStore.getState().bookSeat(21);
+
+      const sale = useStore.getState().liveSale;
+      expect(sale.soldCount).toBe(33);
+      expect(sale.fullPriceCount).toBe(2);
+      expect(sale.capHit).toBe(true);
+      expect(sale.lowestPriceSold).toBe(1100);
+    });
+
+    it('charges full price after the sale is ended early', async () => {
+      const { useStore } = await import('../store/useStore');
+      useStore.getState().resetAll();
+      useStore.getState().endSaleEarly();
+      useStore.getState().bookSeat(1);
+      const sale = useStore.getState().liveSale;
+      expect(sale.soldCount).toBe(12);
+      expect(sale.fullPriceCount).toBe(1);
+    });
+
+    it('blocks the requester from approving their own request', async () => {
+      const { useStore } = await import('../store/useStore');
+      useStore.getState().resetAll();
+      useStore.getState().switchRole('approver');
+      useStore.getState().setDiscountPct(50);
+      useStore.getState().scheduleSale();
+      expect(useStore.getState().pendingApproval?.requestedBy).toBe('approver');
+
+      useStore.getState().setRetypeInput('1000');
+      expect(useStore.getState().submitApprovalRetype()).toBe(false);
+      expect(useStore.getState().liveSale.price).toBe(1600);
+
+      useStore.getState().switchRole('analyst');
+      useStore.getState().setRetypeInput('1000');
+      expect(useStore.getState().submitApprovalRetype()).toBe(true);
+      expect(useStore.getState().liveSale.price).toBe(1000);
+    });
+
+    it('counts wrong retypes and cancels after 3', async () => {
+      const { useStore } = await import('../store/useStore');
+      useStore.getState().resetAll();
+      useStore.getState().setDiscountPct(40);
+      useStore.getState().scheduleSale();
+      useStore.getState().switchRole('approver');
+      useStore.getState().setRetypeInput('1500');
+      useStore.getState().submitApprovalRetype();
+      expect(useStore.getState().retypeAttemptsRemaining).toBe(2);
+      useStore.getState().setRetypeInput('1500');
+      useStore.getState().submitApprovalRetype();
+      useStore.getState().setRetypeInput('1500');
+      useStore.getState().submitApprovalRetype();
+      expect(useStore.getState().pendingApproval).toBeNull();
+    });
+
+    it('cannot schedule a discount over 60%', async () => {
+      const { useStore } = await import('../store/useStore');
+      useStore.getState().resetAll();
+      useStore.getState().setDiscountPct(99.9);
+      useStore.getState().scheduleSale();
+      expect(useStore.getState().liveSale.price).toBe(1600);
     });
   });
 });

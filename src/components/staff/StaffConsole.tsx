@@ -1,5 +1,5 @@
 import React from 'react';
-import { useStore } from '../../store/useStore';
+import { useStore, ROLE_LABELS } from '../../store/useStore';
 import { FourLocksStrip } from './FourLocksStrip';
 import { PriceGateTab } from './PriceGateTab';
 import { ApprovalsTab } from './ApprovalsTab';
@@ -19,9 +19,6 @@ export const StaffConsole: React.FC = () => {
             <div className="flex items-center gap-2">
               <span className="font-marker font-bold text-xl text-[#FFFFFF] tracking-tight">
                 ChronoHop Control
-              </span>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#2A2A2A] border border-[#FF8C42]/40 text-[#FF8C42] font-bold">
-                FOUR-LOCKS v2.4
               </span>
             </div>
           </div>
@@ -80,7 +77,7 @@ export const StaffConsole: React.FC = () => {
           >
             <User size={13} className="text-[#FF8C42]" />
             <span className="font-bold">
-              {currentRole === 'analyst' ? 'Asha (Analyst)' : 'Marcus (Approver)'}
+              {ROLE_LABELS[currentRole]}
             </span>
           </button>
         </div>

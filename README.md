@@ -42,50 +42,50 @@ The prototype features a synchronized, reactive, side-by-side display:
 1. **Left Pane: Customer Mobile App (390×844px iPhone frame)**
    - **Parchment Theme:** `#F4EDDC` background, `#FBF7EC` cards, `#11231D` ink, `#46564D` muted, `#E3A93B` brass, `#8A5A0B` deep brass text, `#1B5A43` ok green.
    - **Screens:**
-     - **Explore:** Search bar, trip catalog with photos (`dino.jpg`, `pyramids.jpg`, `pod.jpg`), flagship sale badges.
+     - **Explore:** Search bar, trip catalog with photos (`dino.jpg`, `pyramids.jpg`, `london.jpg`), flagship sale badges.
      - **Trip Page:** Dinosaur Walk hero, strikethrough list price `$2,000`, active sale price `$1,600`, **33-tick seat bar** (one tick per sale seat), departure slot chips (`06:00`, `06:30`, `07:00`, `07:30`), Fair Price Policy modal trigger, Book button.
-     - **Checkout:** Boarding-pass format with perforation cutouts, **05:00 countdown timer** holding the slot, price re-check validation, and "The price you see is the price you pay" shield guarantee.
+     - **Checkout:** Boarding-pass format with perforation cutouts, **05:00 countdown timer** holding the slot, price re-check validation, and "The price you see is the price you pay" promise.
      - **Listing Paused:** Number 214 in line, "Nothing has been charged", disabled CTA.
      - **Sale Seats Gone:** Reverted to $2,000, 5-minute hold notice, waitlist CTA.
-     - **Confirmation & Waitlist:** Completion receipts with policy guarantees.
+     - **Confirmation & Waitlist:** Completion receipts with the fair-price policy.
 
 2. **Right Pane: Staff Console ("ChronoHop Control")**
    - **Dark Control-Room Theme:** `#0A1612` background, `#0F1F19` panel, `#223A30` border, `#EDE6D4` text, `#A5B3AA` muted, `#E3A93B` brass, `#F1C46B` price neon glow, `#C4302B` / `#FF9A8D` danger red, `#6FD3A0` ok green.
    - **Four-Locks Status Strip:** Live status of Lock 1 (Percent Entry), Lock 2 (Second Look), Lock 3 (Sale-Seat Cap), Lock 4 (Speed Breaker).
-   - **Price Gate Tab:** Discount percent input (0–100%, 1 decimal), price in digits and words at >2x size, 3-tier visual band indicator, cap calculation section with share slider (5–20%) and budget input, custom cap lowering, last 5 sales reference, goes-live scheduling (24h minimum), full-width red STOP banner with executive override controls.
-   - **Approvals Tab:** Pending request side-by-side comparison (List price, New price, Drop %), exact price retype verification (3 failed tries cancels request), separate account identity check.
+   - **Price Gate Tab:** Discount percent input (0–100%, 1 decimal), price in digits and words at >2x size, 3-tier visual band indicator, cap calculation section with share slider (5–20%) and budget input, custom cap lowering, last 5 sales reference, goes-live scheduling (24h minimum), full-width red STOP banner; over 60% is blocked on this screen.
+   - **Approvals Tab:** Pending request side-by-side comparison (List price, New price, Drop %), exact price retype verification (3 failed tries cancels request), the approver must be a different account from the requester.
    - **Timeline Desk Tab:** Three dial gauges (Bookings per slot [Max 1], Lowest price sold vs list, Bookings last 5m vs forecast), sale-speed bar chart with forecast line (6) and breaker threshold (30), live operations controls (Pause listing, 1-click Resume, End sale early), and chronological audit event log.
 
 3. **Bottom Sticky Demo Bar**
    - Interactive simulation triggers:
-     - **One customer books:** Increments booking count by 1.
+     - **Simulate Booking:** One customer books (sale price while seats remain, $2,000 after).
      - **Deal-site rush:** Simulates viral sharing with an escalating surge of bookings.
-     - **Go live now (demo):** Bypasses the 24-hour scheduling requirement to publish the current draft immediately.
-     - **Switch role:** Toggles active account between `Asha (Pricing Analyst)` and `Marcus (Peer Approver)`.
+     - **Test only: skip locks 1–2:** Prototype-only shortcut that puts the current discount live so locks 3 and 4 can be tested.
+     - **Switch role:** Toggles active account between `Asha (Analyst)` and `Marcus (Approver)`.
      - **Reset:** Restores store state to the initial baseline.
      - **Lock 3 Cap toggle:** Toggles Lock 3 on/off to demonstrate unconstrained loss.
      - **Lock 4 Breaker toggle:** Toggles Lock 4 on/off to demonstrate unchecked runaway surges.
 
 ---
 
-## 📋 PRD Assumptions & Config Dictionary
+## 📋 Rules, Assumptions & Config Dictionary
 
-All business rules reside in `src/config/pricingRules.ts` matching PRD specifications exactly:
+All business rules reside in `src/config/pricingRules.ts` matching the case rules exactly:
 
 | Parameter | Value | Source / Business Rationale |
 |---|---|---|
 | `LIST_PRICE` | `$2,000` | Standard catalog price for the flagship Dinosaur Walk trip. |
 | `DAYS_IN_WINDOW` | `7 days` | Length of the promotional sale window. |
-| `SLOTS_PER_DAY` | `48 slots` | 24 hours × 2 half-hour slots per hour (single traveller per pod). |
+| `SLOTS_PER_DAY` | `48 slots` | 24 hours × 2 half-hour slots per hour (one traveller per slot). |
 | `WINDOW_SEATS` | `336 seats` | Total capacity in window: 7 days × 48 slots = 336 seats. |
-| `LOSS_PER_SEAT_AT_TYPO` | `$1,940` | Worst-case loss per seat if a $2,000 trip is typed as $2.00 or $60 floor. |
+| `LOSS_PER_SEAT_AT_TYPO` | `$1,940` | Loss per seat if a $2,000 trip sells at $2: $1,998 less the 2.9% card fee. Worst case 33 × $1,940 ≈ $64,000. |
 | `DEFAULT_SHARE_PCT` | `10%` | Default capacity share allocated to the sale (slider 5% to 20%). |
 | `DEFAULT_BUDGET` | `$100,000` | Maximum corporate loss exposure accepted for a single promotion. |
-| `DEFAULT_CAP` | `33 seats` | Rule: `min(floor(10% × 336), floor(100,000 / 1940)) = min(33, 51) = 33 seats`. *(Note: Although an early PRD draft mentioned 50 seats, the official worked formula yields 33 seats, and 33 is used consistently per instructions).* |
+| `DEFAULT_CAP` | `33 seats` | Rule: `min(floor(10% × 336), floor(100,000 / 1940)) = min(33, 51) = 33 seats`. |
 | `MAX_SEATS_PER_CUSTOMER` | `2 seats` | Cap of 2 sale seats per account and per credit card per sale. |
 | `BAND_1_MAX_PCT` | `30.0%` | 0% to 30% discount: 1 person (pricing analyst alone). |
 | `BAND_2_MAX_PCT` | `60.0%` | >30% to 60% discount: 2 people (requires peer approver). |
-| `BAND_BLOCKED_PCT` | `>60.0%` | Over 60% discount or price above list: Blocked unless Finance Lead & Founder both approve with written justification. |
+| `BAND_BLOCKED_PCT` | `>60.0%` | Over 60% discount or price above list: Blocked here; finance lead + founder approve outside this screen. |
 | `MAX_RETYPE_ATTEMPTS` | `3 tries` | Approver must type the exact final price; 3 wrong attempts cancels request. |
 | `FLAGSHIP_MIN_SCHEDULE_HOURS` | `24 hours` | Flagship trip sales must be scheduled at least 24 hours in advance. |
 | `BREAKER_MULTIPLIER` | `5×` | Trips when rolling 5-minute bookings exceed 5 times the forecast. |
@@ -110,20 +110,20 @@ Automated and interactive verification scenarios:
    - Analyst enters `99.9%`.
    - Full-width red **STOP banner** triggers immediately, Schedule button disabled.
    - Price shows `$2.00` (`"Two dollars"`).
-   - Executive override panel requires written reason, Finance Lead sign-off, and Founder co-sign.
+   - No override on this screen: finance lead + founder approval happens outside it.
 
 3. **Scenario C (Two-Person Peer Approval & Retype):**
    - Analyst enters `40%`.
    - Price is `$1,200` (`"One thousand two hundred dollars"`), Band 2 triggers.
    - Request sent to Approvals tab.
-   - Switch to Approver account. Typing an incorrect price (e.g., `$1,500`) fails and decrements attempts.
+   - Switch to a different account (the requester cannot approve their own request). Typing an incorrect price (e.g., `$1,500`) fails and decrements attempts.
    - Typing exact `$1,200` validates match and schedules sale.
 
 4. **Scenario D (Deal-Site Rush & Dual Lock Protection):**
-   - Test override forces `$2.00` price live.
+   - "Test only: skip locks 1–2" puts the `$2.00` price live.
    - Customer clicks "Deal-site rush".
    - Bookings surge rapidly:
-     - **Lock 3 Auto-Revert:** When sold seats hit 33, price automatically returns to `$2,000`.
+     - **Lock 3 Auto-Revert:** When sale seats hit 33, price returns to `$2,000`; any further bookings are charged full price.
      - **Lock 4 Speed Breaker:** Rolling bookings exceed 30 (5× forecast), automatically pausing new bookings.
      - Customer phone displays paused screen: *"Your place is saved: number 214 in line. Nothing has been charged."*
 
@@ -150,4 +150,4 @@ Automated and interactive verification scenarios:
 
 - **Dinosaur Walk (`dino.jpg`):** Triceratops model in fern forest by Martinvl, licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) via Wikimedia Commons.
 - **Pyramids (`pyramids.jpg`):** Sunset at the Pyramids by Spottedviper, licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) via Wikimedia Commons.
-- **ChronoPod (`pod.jpg`):** AI-generated time-travel pod illustration.
+- **Victorian London (`london.jpg`):** AI-generated.

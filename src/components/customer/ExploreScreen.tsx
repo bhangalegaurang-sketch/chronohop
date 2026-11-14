@@ -48,7 +48,7 @@ export const ExploreScreen: React.FC = () => {
           Travel <span className="text-[#FF8C42]">Time</span>
         </h1>
         <p className="text-xs text-[#E6E6E6]/85 font-chalk leading-relaxed">
-          Curated departures across prehistoric and human history. Enclosed pressurized observation pods, licensed chrononavigators, and synchronized return beacons.
+          Curated trips across prehistoric and human history. Small guided visits with a trained guide and a set return time.
         </p>
       </div>
 
@@ -130,7 +130,7 @@ export const ExploreScreen: React.FC = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-[#1A1A1A] via-transparent to-transparent opacity-80" />
               <div className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between text-xs font-sketch text-[#E6E6E6]">
                 <span className="bg-[#1A1A1A]/80 border border-[#E6E6E6]/40 px-2 py-0.5 rounded-full text-[10px]">
-                  Pod Mk IV Guided Loop
+                  30-min Guided Walk
                 </span>
               </div>
             </div>
@@ -138,7 +138,7 @@ export const ExploreScreen: React.FC = () => {
             {/* Action Bar with Orange BOOK button */}
             <div className="mt-3 pt-2.5 border-t border-[#E6E6E6]/20 flex items-center justify-between">
               <span className="text-xs font-sketch text-[#E6E6E6]/70">
-                Single traveller pod · 30-min window
+                One traveller · 30-min window
               </span>
               <div className="flex items-center gap-2">
                 {(!isSaleActive || remainingSeats <= 0) && (
@@ -178,7 +178,7 @@ export const ExploreScreen: React.FC = () => {
                 <span className="text-2xl font-bold font-sketch text-[#FF8C42] block leading-tight">
                   $900
                 </span>
-                <span className="text-[10px] text-[#E6E6E6]/50 font-sketch">per pod</span>
+                <span className="text-[10px] text-[#E6E6E6]/50 font-sketch">per traveller</span>
               </div>
             </div>
 
@@ -227,7 +227,7 @@ export const ExploreScreen: React.FC = () => {
                 <span className="text-2xl font-bold font-sketch text-[#FF8C42] block leading-tight">
                   $1,400
                 </span>
-                <span className="text-[10px] text-[#E6E6E6]/50 font-sketch">per pod</span>
+                <span className="text-[10px] text-[#E6E6E6]/50 font-sketch">per traveller</span>
               </div>
             </div>
 

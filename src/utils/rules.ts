@@ -1,6 +1,6 @@
 import { PRICING_RULES } from '../config/pricingRules';
 
-export type ApprovalBand = 'band_1' | 'band_2' | 'blocked';
+export type ApprovalBand = 'band_1' | 'band_2' | 'blocked' | 'invalid';
 
 /**
  * Calculate the sale price from a discount percentage.
@@ -23,7 +23,7 @@ export function calculateRuleCap(
 ): number {
   const shareSeats = Math.floor((sharePct / 100) * PRICING_RULES.WINDOW_SEATS);
   const budgetSeats = Math.floor(budget / PRICING_RULES.LOSS_PER_SEAT_AT_TYPO);
-  return Math.max(1, Math.min(shareSeats, budgetSeats));
+  return Math.max(0, Math.min(shareSeats, budgetSeats));
 }
 
 /**
@@ -43,14 +43,14 @@ export function getEffectiveCap(
 
 /**
  * Determine approval band:
- * - 0 to 30%: band_1 (requester alone)
+ * - 0 to 30%: band_1 (requester alone; 0% means no discount)
  * - Over 30 to 60%: band_2 (second approver)
- * - Over 60%: blocked (finance lead + founder approval + written reason)
- * - Above list price (<0% discount): blocked
+ * - Over 60%: blocked (finance lead + founder approve outside this screen)
+ * - Empty, below 0% or above 100%: invalid input
  */
 export function getApprovalBand(discountPct: number): ApprovalBand {
-  if (discountPct <= 0 || discountPct > 100) {
-    return 'blocked';
+  if (discountPct == null || isNaN(discountPct) || discountPct < 0 || discountPct > 100) {
+    return 'invalid';
   }
   if (discountPct <= PRICING_RULES.BAND_1_MAX_PCT) {
     return 'band_1';
@@ -86,13 +86,33 @@ export function verifyRetypedPrice(input: string, expectedPrice: number): boolea
 }
 
 /**
+ * Loss per sale seat, net of the card fee we no longer pay on the lost revenue.
+ * Loss = (LIST - Price) x (1 - 2.9%). At $2 this is $1,940.
+ */
+export function calculateLossPerSeat(
+  salePrice: number,
+  listPrice = PRICING_RULES.LIST_PRICE
+): number {
+  return Math.max(0, Math.round((listPrice - salePrice) * (1 - PRICING_RULES.CARD_FEE_PCT / 100)));
+}
+
+/**
  * Estimate worst-case loss if this price is wrong
- * Exposure = Cap * (LIST - Price)
+ * Exposure = Cap * loss per seat
  */
 export function calculateWorstCaseLoss(
   cap: number,
   salePrice: number,
   listPrice = PRICING_RULES.LIST_PRICE
 ): number {
-  return Math.max(0, cap * Math.round(listPrice - salePrice));
+  return Math.max(0, cap * calculateLossPerSeat(salePrice, listPrice));
+}
+
+/**
+ * Flagship rule: a sale must start at least 24 hours from now.
+ */
+export function isScheduleValid(scheduledTime: string, now: Date = new Date()): boolean {
+  const when = new Date(scheduledTime).getTime();
+  if (isNaN(when)) return false;
+  return when - now.getTime() >= PRICING_RULES.FLAGSHIP_MIN_SCHEDULE_HOURS * 60 * 60 * 1000;
 }

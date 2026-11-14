@@ -83,8 +83,8 @@ export const ProfileScreen: React.FC = () => {
         </h2>
 
         <div className="flex items-center justify-between pb-2 border-b border-[#E6E6E6]/15">
-          <span className="text-[#E6E6E6]">✓ Dual Return Beacon Mesh</span>
-          <span className="font-bold text-[#88D49E]">Locked &amp; Active</span>
+          <span className="text-[#E6E6E6]">✓ Trained Guide on Every Trip</span>
+          <span className="font-bold text-[#88D49E]">Included</span>
         </div>
 
         <div className="flex items-center justify-between pb-2 border-b border-[#E6E6E6]/15">

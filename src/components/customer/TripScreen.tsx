@@ -22,7 +22,7 @@ export const TripScreen: React.FC = () => {
     setShowFairPriceSheet
   } = useStore();
 
-  const [activeTab, setActiveTab] = useState<'telemetry' | 'specs' | 'observations'>('telemetry');
+  const [activeTab, setActiveTab] = useState<'details' | 'specs' | 'observations'>('details');
 
   const trip = TRIPS_CATALOG[selectedTripId] || TRIPS_CATALOG.dino;
   const isFlagship = trip.isFlagship;
@@ -48,7 +48,7 @@ export const TripScreen: React.FC = () => {
         <div className="flex items-center gap-1.5">
           <span className="text-[#FF8C42] text-lg">✳</span>
           <span className="font-sketch font-bold text-xs uppercase tracking-wider text-[#E6E6E6]">
-            {trip.era} · Field Telemetry
+            {trip.era} · Trip Details
           </span>
         </div>
 
@@ -66,14 +66,14 @@ export const TripScreen: React.FC = () => {
       <div className="relative z-30 px-5 pt-2 pb-2">
         <div className="flex items-center justify-between bg-[#222222] border border-[#E6E6E6]/30 p-1 rounded-full text-xs font-sketch">
           <button
-            onClick={() => setActiveTab('telemetry')}
+            onClick={() => setActiveTab('details')}
             className={`flex-1 py-1 rounded-full text-center transition-all ${
-              activeTab === 'telemetry'
+              activeTab === 'details'
                 ? 'bg-[#E6E6E6] text-[#1A1A1A] font-bold shadow-[1px_2px_0px_#FF8C42]'
                 : 'text-[#E6E6E6]/70 hover:text-white'
             }`}
           >
-            1. TELEMETRY
+            1. DETAILS
           </button>
           <button
             onClick={() => setActiveTab('specs')}
@@ -100,8 +100,8 @@ export const TripScreen: React.FC = () => {
 
       {/* Main Tab Content Body (Scrollable) */}
       <div className="relative z-20 flex-1 visible-scrollbar-y px-5 pb-28 space-y-4">
-        {/* TAB 1: TELEMETRY (Chalkboard Telemetry Sheet) */}
-        {activeTab === 'telemetry' && (
+        {/* TAB 1: TRIP DETAILS */}
+        {activeTab === 'details' && (
           <div className="space-y-4 pt-1 animate-fadeIn">
             {/* Bold Handwritten Headline */}
             <div>
@@ -113,43 +113,29 @@ export const TripScreen: React.FC = () => {
               </p>
             </div>
 
-            {/* Hand-Drawn Telemetry Wireframe Table with Thin White Outlines */}
+            {/* Hand-Drawn Trip Details Table with Thin White Outlines */}
             <div className="sketch-card rounded-[24px] p-4 space-y-2.5">
-              <div className="flex items-center justify-between pb-2 border-b border-[#E6E6E6]/15 text-xs font-sketch">
-                <span className="text-[#E6E6E6]/60">Designation</span>
-                <span className="font-bold text-[#FFFFFF]">{trip.telemetry.adjectives}</span>
-              </div>
-
-              <div className="flex items-center justify-between pb-2 border-b border-[#E6E6E6]/15 text-xs font-sketch">
-                <span className="text-[#E6E6E6]/60">Distance</span>
-                <span className="font-mono text-[#FF8C42] font-bold">{trip.telemetry.distance}</span>
-              </div>
-
-              <div className="flex items-center justify-between pb-2 border-b border-[#E6E6E6]/15 text-xs font-sketch">
-                <span className="text-[#E6E6E6]/60">Eccentricity</span>
-                <span className="font-mono text-[#E6E6E6]">{trip.telemetry.eccentricity}</span>
-              </div>
-
-              <div className="flex items-center justify-between pb-2 border-b border-[#E6E6E6]/15 text-xs font-sketch">
-                <span className="text-[#E6E6E6]/60">Timeline Inclination</span>
-                <span className="font-mono text-[#E6E6E6]">{trip.telemetry.inclination}</span>
-              </div>
-
-              <div className="flex items-center justify-between pb-2 border-b border-[#E6E6E6]/15 text-xs font-sketch">
-                <span className="text-[#E6E6E6]/60">Chrono-Coordinates</span>
-                <span className="font-mono text-[#88D49E] font-bold">{trip.telemetry.coordinates}</span>
-              </div>
-
-              <div className="flex items-center justify-between text-xs font-sketch">
-                <span className="text-[#E6E6E6]/60">Atmosphere</span>
-                <span className="text-[#E6E6E6] font-bold">{trip.telemetry.atmosphere}</span>
-              </div>
+              {[
+                ['Era', trip.details.period],
+                ['How far back', trip.details.howFarBack],
+                ['Trip length', trip.details.tripLength],
+                ["What you'll see", trip.details.whatYoullSee],
+                ['Weather', trip.details.climate],
+              ].map(([label, value], idx, rows) => (
+                <div
+                  key={label}
+                  className={`flex items-center justify-between gap-3 text-xs font-sketch ${idx < rows.length - 1 ? 'pb-2 border-b border-[#E6E6E6]/15' : ''}`}
+                >
+                  <span className="text-[#E6E6E6]/60 flex-shrink-0">{label}</span>
+                  <span className={`text-right ${idx === 1 ? 'font-mono text-[#FF8C42] font-bold' : 'font-bold text-[#FFFFFF]'}`}>{value}</span>
+                </div>
+              ))}
             </div>
 
             {/* Floating pointer annotation (Design Guide Section 5) */}
             <div className="sketch-dashed rounded-2xl p-3 flex items-center justify-between text-xs">
               <span className="text-[#FF8C42] rotate-1">
-                ↷ Next: Select pod slot &amp; view pricing
+                ↷ Next: Pick a time slot &amp; see the price
               </span>
               <button
                 onClick={() => setActiveTab('specs')}
@@ -161,7 +147,7 @@ export const TripScreen: React.FC = () => {
           </div>
         )}
 
-        {/* TAB 2: SPECS & BOOKING (Pricing Gate, Axial Tilt, Slots) */}
+        {/* TAB 2: SPECS & BOOKING (Pricing Gate, Trip Length, Slots) */}
         {activeTab === 'specs' && (
           <div className="space-y-4 pt-1 animate-fadeIn">
             {/* Header */}
@@ -171,12 +157,12 @@ export const TripScreen: React.FC = () => {
               </h2>
             </div>
 
-            {/* Axial Tilt Hand-Drawn Curved Visual (Design Guide Section 4) */}
+            {/* Trip Length Hand-Drawn Curved Visual (Design Guide Section 4) */}
             <div className="sketch-card rounded-[24px] p-4 flex items-center justify-between">
               <div>
-                <span className="text-xs text-[#E6E6E6]/60 font-sketch block">Axial Precession</span>
-                <span className="text-sm font-bold font-sketch text-[#FFFFFF] block mt-0.5">{trip.telemetry.axialTilt}</span>
-                <span className="text-[11px] text-[#88D49E] font-mono block mt-1">✓ Escape vel: {trip.telemetry.escapeVelocity}</span>
+                <span className="text-xs text-[#E6E6E6]/60 font-sketch block">Trip Length</span>
+                <span className="text-sm font-bold font-sketch text-[#FFFFFF] block mt-0.5">{trip.details.tripLength}</span>
+                <span className="text-[11px] text-[#88D49E] font-mono block mt-1">✓ {trip.details.pace}</span>
               </div>
 
               {/* Hand-drawn sketchy concentric loops */}
@@ -252,7 +238,7 @@ export const TripScreen: React.FC = () => {
                   <Clock size={13} className="text-[#FF8C42]" />
                   Departure Slots (Saturday)
                 </span>
-                <span className="text-[11px] text-[#88D49E] font-sketch">Single Pod Mk IV</span>
+                <span className="text-[11px] text-[#88D49E] font-sketch">One traveller per slot</span>
               </div>
 
               <div className="grid grid-cols-4 gap-2">
@@ -331,7 +317,7 @@ export const TripScreen: React.FC = () => {
             {/* "See also" Tag Cloud with Minimalist Sketchy Boxes */}
             <div className="sketch-card rounded-[24px] p-4 space-y-2">
               <span className="text-xs font-sketch text-[#E6E6E6]/70 block">
-                Related Historical Nodes &amp; Instruments
+                Related Topics
               </span>
               <div className="flex flex-wrap gap-2">
                 {trip.seeAlso.map((item, idx) => (
@@ -348,11 +334,11 @@ export const TripScreen: React.FC = () => {
             {/* Supplementary notes grouped in dashed bounding box */}
             <div className="sketch-dashed rounded-[24px] p-4 space-y-2 text-xs">
               <div className="flex items-center justify-between text-[#88D49E]">
-                <span className="font-bold font-sketch">✓ Dual Return Beacon Mesh</span>
-                <span className="font-mono text-[11px] text-[#88D49E]">Active</span>
+                <span className="font-bold font-sketch">✓ Trained guide on every trip</span>
+                <span className="font-mono text-[11px] text-[#88D49E]">Included</span>
               </div>
               <p className="text-[#E6E6E6]/70 font-chalk">
-                All expeditions are equipped with dual return beacons and licensed chrononavigators for precise departure and return timing.
+                Every trip has a trained guide and a set departure and return time.
               </p>
             </div>
 
@@ -362,7 +348,7 @@ export const TripScreen: React.FC = () => {
                 onClick={() => setActiveTab('specs')}
                 className="sketch-btn-orange w-full py-3.5 text-xs rounded-full"
               >
-                PROCEED TO POD RESERVATION →
+                PROCEED TO BOOKING →
               </button>
             </div>
           </div>

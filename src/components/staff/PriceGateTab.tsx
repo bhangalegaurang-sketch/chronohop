@@ -6,7 +6,8 @@ import {
   calculateRuleCap,
   getEffectiveCap,
   getApprovalBand,
-  calculateWorstCaseLoss
+  calculateWorstCaseLoss,
+  isScheduleValid
 } from '../../utils/rules';
 import { formatMoney, numberToWords } from '../../utils/formatters';
 import { Shield, AlertTriangle, Lock, Check, Send } from 'lucide-react';
@@ -23,29 +24,41 @@ export const PriceGateTab: React.FC = () => {
     setCustomCap,
     scheduledTime,
     setScheduledTime,
-    overrideReason,
-    setOverrideReason,
-    financeLeadApproved,
-    toggleFinanceLeadApproved,
-    founderApproved,
-    toggleFounderApproved,
     scheduleSale,
-    sendToApprover,
     forceLiveDemo
   } = useStore();
 
-  const price = calculatePrice(discountPct);
-  const ruleCap = calculateRuleCap(sharePct, budget);
-  const effectiveCap = getEffectiveCap(sharePct, budget, customCap);
   const band = getApprovalBand(discountPct);
-  const worstCase = calculateWorstCaseLoss(effectiveCap, price);
-  const words = numberToWords(price);
-
+  const isInvalid = band === 'invalid';
   const isBlocked = band === 'blocked';
   const isBand2 = band === 'band_2';
   const isBand1 = band === 'band_1';
+  const isNoDiscount = isBand1 && discountPct === 0;
 
-  const canOverride = overrideReason.trim().length > 5 && financeLeadApproved && founderApproved;
+  const price = isInvalid ? PRICING_RULES.LIST_PRICE : calculatePrice(discountPct);
+  const ruleCap = calculateRuleCap(sharePct, budget);
+  const effectiveCap = getEffectiveCap(sharePct, budget, customCap);
+  const worstCase = calculateWorstCaseLoss(effectiveCap, price);
+  const words = numberToWords(price);
+  const belowLowestEver = Math.max(0, PRICING_RULES.LOWEST_EVER_SOLD - price);
+
+  const customCapError = customCap !== null && customCap <= 0;
+  const customCapClamped = customCap !== null && customCap > ruleCap && ruleCap > 0;
+  const capIsZero = effectiveCap <= 0;
+  const scheduleOk = isScheduleValid(scheduledTime);
+
+  const formProblem = isInvalid
+    ? 'Enter a discount between 0% and 100%.'
+    : isNoDiscount
+      ? '0% means no discount, so there is no sale to schedule.'
+      : customCapError
+        ? 'Custom cap must be at least 1 seat.'
+        : capIsZero
+          ? 'Sale-seat cap is 0 seats, so this sale cannot run. Raise the loss budget.'
+          : !scheduleOk
+            ? 'Flagship sales must start at least 24 hours from now.'
+            : null;
+  const canSubmit = formProblem === null;
 
   return (
     <div className="space-y-4 p-4 text-[#E6E6E6] font-sketch select-none">
@@ -64,10 +77,10 @@ export const PriceGateTab: React.FC = () => {
               STOP. THIS PRICE IS BLOCKED.
             </h2>
             <p className="text-xs font-chalk leading-relaxed text-white/95">
-              {discountPct}% discount ({formatMoney(price)}) is {formatMoney(1500 - price)} lower than this trip has ever sold for. Did you type a price instead of a percent?
+              {discountPct}% discount ({formatMoney(price)}) is {formatMoney(belowLowestEver)} lower than this trip has ever sold for. Did you type a price instead of a percent?
             </p>
             <p className="text-[11px] text-[#E6E6E6]/80 font-chalk">
-              Discounts over 60% require written justification, Finance Lead sign-off, and Founder authorization.
+              Discounts over 60% cannot be scheduled from this screen. Finance lead and founder approval happens outside this screen.
             </p>
           </div>
         </div>
@@ -108,12 +121,22 @@ export const PriceGateTab: React.FC = () => {
                 step="0.1"
                 min="0"
                 max="100"
-                value={discountPct}
-                onChange={(e) => setDiscountPct(parseFloat(e.target.value) || 0)}
-                className="w-full bg-[#141414] border border-[#E6E6E6]/40 text-[#FFFFFF] font-mono font-black text-2xl px-3.5 py-2 rounded-xl text-right focus:outline-none focus:border-[#FF8C42] min-h-[46px]"
+                value={isNaN(discountPct) ? '' : discountPct}
+                onChange={(e) => setDiscountPct(e.target.value === '' ? NaN : parseFloat(e.target.value))}
+                aria-invalid={isInvalid}
+                aria-describedby="discount-error"
+                className={`w-full bg-[#141414] border ${isInvalid ? 'border-red-500' : 'border-[#E6E6E6]/40'} text-[#FFFFFF] font-mono font-black text-2xl px-3.5 py-2 rounded-xl text-right focus:outline-none focus:border-[#FF8C42] min-h-[46px]`}
               />
               <span className="font-mono font-bold text-xl text-[#FF8C42]">%</span>
             </div>
+            {isInvalid && (
+              <p id="discount-error" className="text-xs text-red-400 font-mono">
+                ⚠ {isNaN(discountPct) ? 'Enter a discount.' : 'Discount must be between 0% and 100%.'}
+              </p>
+            )}
+            {isNoDiscount && (
+              <p className="text-xs text-[#E6E6E6]/70 font-chalk">0% = no discount (full $2,000 price).</p>
+            )}
           </div>
 
           {/* Sized-up Calculated Price Display in Muted Orange (#FF8C42) */}
@@ -122,10 +145,10 @@ export const PriceGateTab: React.FC = () => {
               Calculated Checkout Price (LIST × [1 - DISCOUNT%])
             </span>
             <div className="font-mono font-black text-4xl sm:text-5xl text-[#FF8C42] tracking-tight py-1">
-              {formatMoney(price)}
+              {isInvalid ? '—' : formatMoney(price)}
             </div>
             <div className="text-xs font-chalk text-[#E6E6E6]/90 italic">
-              "{words}"
+              {isInvalid ? 'No price until the discount is valid' : `"${words}"`}
             </div>
           </div>
         </div>
@@ -137,8 +160,14 @@ export const PriceGateTab: React.FC = () => {
               <Shield size={14} className="text-[#FF8C42]" />
               Approval Tier Governance
             </span>
-            <span className={isBand1 ? 'text-[#88D49E]' : isBand2 ? 'text-[#FF8C42]' : 'text-red-400'}>
-              {isBand1 ? 'Tier 1: Requester Alone' : isBand2 ? 'Tier 2: Dual Approval Required' : 'Tier 3: Blocked (Executive Override)'}
+            <span className={isBand1 ? 'text-[#88D49E]' : isBand2 ? 'text-[#FF8C42]' : isInvalid ? 'text-[#E6E6E6]/50' : 'text-red-400'}>
+              {isBand1
+                ? (isNoDiscount ? 'Tier 1: No Discount' : 'Tier 1: Requester Alone')
+                : isBand2
+                  ? 'Tier 2: Second Person Required'
+                  : isInvalid
+                    ? 'Enter a valid discount'
+                    : 'Tier 3: Blocked'}
             </span>
           </div>
 
@@ -153,7 +182,7 @@ export const PriceGateTab: React.FC = () => {
             {/* Pointer */}
             <div
               className="absolute top-1 w-2.5 h-6 bg-[#FFFFFF] border border-[#1A1A1A] rounded shadow-[0_0_8px_rgba(255,255,255,0.9)] -translate-x-1/2 pointer-events-none transition-all duration-150"
-              style={{ left: `${Math.max(1, Math.min(99, discountPct))}%` }}
+              style={{ left: `${Math.max(1, Math.min(99, isNaN(discountPct) ? 0 : discountPct))}%` }}
             />
 
             <div className="flex justify-between text-[11px] font-mono mt-2 font-medium">
@@ -217,7 +246,7 @@ export const PriceGateTab: React.FC = () => {
                 Max Accepted Loss Budget
               </label>
               <span className="font-mono text-[#E6E6E6]/60 text-[11px]">
-                = {Math.floor(budget / PRICING_RULES.LOSS_PER_SEAT_AT_TYPO)} seats
+                = {Math.max(0, Math.floor(budget / PRICING_RULES.LOSS_PER_SEAT_AT_TYPO))} seats
               </span>
             </div>
             <div className="flex items-center gap-1.5">
@@ -228,7 +257,7 @@ export const PriceGateTab: React.FC = () => {
                 step="10000"
                 min="10000"
                 value={budget}
-                onChange={(e) => setBudget(parseInt(e.target.value, 10) || 0)}
+                onChange={(e) => setBudget(Math.max(0, parseInt(e.target.value, 10) || 0))}
                 className="w-full bg-[#141414] border border-[#E6E6E6]/40 font-mono text-right px-3 py-1.5 rounded-xl text-[#FFFFFF] text-sm font-bold focus:outline-none focus:border-[#FF8C42]"
               />
             </div>
@@ -258,9 +287,10 @@ export const PriceGateTab: React.FC = () => {
                 value={customCap ?? ''}
                 onChange={(e) => {
                   const val = e.target.value === '' ? null : parseInt(e.target.value, 10);
-                  setCustomCap(val !== null && !isNaN(val) ? Math.min(val, ruleCap) : null);
+                  setCustomCap(val !== null && !isNaN(val) ? val : null);
                 }}
-                className="w-24 bg-[#141414] border border-[#E6E6E6]/40 font-mono text-right px-2.5 py-1 rounded-lg text-[#FFFFFF] text-xs font-bold focus:outline-none focus:border-[#FF8C42]"
+                aria-invalid={customCapError}
+                className={`w-24 bg-[#141414] border ${customCapError ? 'border-red-500' : 'border-[#E6E6E6]/40'} font-mono text-right px-2.5 py-1 rounded-lg text-[#FFFFFF] text-xs font-bold focus:outline-none focus:border-[#FF8C42]`}
               />
               {customCap !== null && (
                 <button
@@ -272,28 +302,44 @@ export const PriceGateTab: React.FC = () => {
                 </button>
               )}
             </div>
+            {customCapError && (
+              <p className="w-full text-xs text-red-400 font-mono">⚠ Custom cap must be at least 1 seat.</p>
+            )}
+            {customCapClamped && (
+              <p className="w-full text-xs text-[#FF8C42] font-chalk">
+                {customCap} is above the rule cap, so {ruleCap} is used. The cap can only be lowered, never raised.
+              </p>
+            )}
+            {capIsZero && !customCapError && (
+              <p className="w-full text-xs text-red-400 font-mono">⚠ Cap is 0 seats: the sale cannot run with this budget.</p>
+            )}
           </div>
         </div>
 
         {/* Schedule & Historical Context Strip */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs bg-[#1A1A1A] p-4 rounded-2xl border border-[#E6E6E6]/30">
           <div>
-            <span className="text-[10.5px] font-mono text-[#E6E6E6]/60 uppercase block font-bold">
-              Publication Schedule (Flagship Rule: Min 24 Hours)
-            </span>
+            <label htmlFor="schedule-input" className="text-[10.5px] font-mono text-[#E6E6E6]/60 uppercase block font-bold">
+              Sale Start (Flagship Rule: Min 24 Hours From Now)
+            </label>
             <input
-              type="text"
+              id="schedule-input"
+              type="datetime-local"
               value={scheduledTime}
               onChange={(e) => setScheduledTime(e.target.value)}
-              className="w-full mt-1 bg-[#141414] border border-[#E6E6E6]/40 text-[#FFFFFF] font-mono text-xs px-3 py-1.5 rounded-lg focus:outline-none focus:border-[#FF8C42]"
+              aria-invalid={!scheduleOk}
+              className={`w-full mt-1 bg-[#141414] border ${scheduleOk ? 'border-[#E6E6E6]/40' : 'border-red-500'} text-[#FFFFFF] font-mono text-xs px-3 py-1.5 rounded-lg focus:outline-none focus:border-[#FF8C42] [color-scheme:dark]`}
             />
+            {!scheduleOk && (
+              <p className="text-xs text-red-400 font-mono mt-1">⚠ Pick a start time at least 24 hours from now.</p>
+            )}
           </div>
           <div>
             <span className="text-[10.5px] font-mono text-[#E6E6E6]/60 uppercase block font-bold">
               Recent Sales History on Dinosaur Walk
             </span>
             <p className="font-mono text-xs text-[#FFFFFF] mt-1.5">
-              15% · 20% · 10% · 25% · 20% (Lowest ever sold: $1,500)
+              15% · 20% · 10% · 25% · 20% (Lowest ever sold: {formatMoney(PRICING_RULES.LOWEST_EVER_SOLD)})
             </p>
             <p className="text-[10.5px] text-[#E6E6E6]/60 font-chalk mt-0.5">
               Max potential loss at current settings: <strong className="text-[#FF8C42]">{formatMoney(worstCase)}</strong>
@@ -301,72 +347,45 @@ export const PriceGateTab: React.FC = () => {
           </div>
         </div>
 
-        {/* Blocked State Executive Override Panel */}
+        {/* Blocked State: no override from this screen */}
         {isBlocked && (
-          <div className="bg-[#241714] border border-red-500 rounded-2xl p-4 space-y-3">
+          <div className="bg-[#241714] border border-red-500 rounded-2xl p-4 space-y-1.5">
             <div className="flex items-center gap-2 text-red-400 text-xs font-bold uppercase tracking-wider font-mono">
               <Lock size={14} />
-              Executive Dual-Authorization Required
+              Blocked: Over 60% Off
             </div>
-
-            <div className="space-y-1">
-              <label htmlFor="override-reason" className="text-xs text-[#E6E6E6]/80 font-medium">
-                Mandatory Written Justification:
-              </label>
-              <textarea
-                id="override-reason"
-                rows={2}
-                placeholder="Document commercial rationale for discount exceeding 60%..."
-                value={overrideReason}
-                onChange={(e) => setOverrideReason(e.target.value)}
-                className="w-full bg-[#141414] border border-[#E6E6E6]/30 text-[#FFFFFF] text-xs p-2.5 rounded-xl focus:outline-none focus:border-red-500 font-chalk"
-              />
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-xs">
-              <label className="flex items-center gap-2 p-2.5 rounded-xl bg-[#1A1A1A] border border-[#E6E6E6]/30 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={financeLeadApproved}
-                  onChange={toggleFinanceLeadApproved}
-                  className="rounded accent-red-500"
-                />
-                <span className="text-xs font-semibold text-[#FFFFFF]">
-                  Finance Lead Sign-off
-                </span>
-              </label>
-
-              <label className="flex items-center gap-2 p-2.5 rounded-xl bg-[#1A1A1A] border border-[#E6E6E6]/30 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={founderApproved}
-                  onChange={toggleFounderApproved}
-                  className="rounded accent-red-500"
-                />
-                <span className="text-xs font-semibold text-[#FFFFFF]">
-                  Founder Sign-off
-                </span>
-              </label>
-            </div>
+            <p className="text-xs text-[#E6E6E6]/80 font-chalk">
+              Finance lead + founder approval happens outside this screen. Nobody can put this price live from here.
+            </p>
           </div>
         )}
 
         {/* Action Buttons */}
-        <div className="pt-2">
-          {isBand1 && (
+        <div className="pt-2 space-y-2">
+          {formProblem && !isBlocked && (
+            <p className="text-xs text-red-400 font-mono text-center">⚠ {formProblem}</p>
+          )}
+
+          {(isBand1 || isInvalid) && (
             <button
+              disabled={!canSubmit}
               onClick={scheduleSale}
-              className="sketch-btn-orange w-full py-3.5 text-sm rounded-full flex items-center justify-center gap-2"
+              className={`sketch-btn-orange w-full py-3.5 text-sm rounded-full flex items-center justify-center gap-2 ${
+                !canSubmit ? 'opacity-40 cursor-not-allowed' : ''
+              }`}
             >
               <Check size={16} />
-              <span>SCHEDULE SALE · {formatMoney(price)} ({effectiveCap} SEATS)</span>
+              <span>{isInvalid ? 'SCHEDULE SALE' : `SCHEDULE SALE · ${formatMoney(price)} (${effectiveCap} SEATS)`}</span>
             </button>
           )}
 
           {isBand2 && (
             <button
-              onClick={sendToApprover}
-              className="sketch-btn-orange w-full py-3.5 text-sm rounded-full flex items-center justify-center gap-2"
+              disabled={!canSubmit}
+              onClick={scheduleSale}
+              className={`sketch-btn-orange w-full py-3.5 text-sm rounded-full flex items-center justify-center gap-2 ${
+                !canSubmit ? 'opacity-40 cursor-not-allowed' : ''
+              }`}
             >
               <Send size={16} />
               <span>SUBMIT TO SECOND APPROVER ({discountPct}% OFF · {formatMoney(price)})</span>
@@ -376,24 +395,20 @@ export const PriceGateTab: React.FC = () => {
           {isBlocked && (
             <div className="space-y-2">
               <button
-                disabled={!canOverride}
-                onClick={scheduleSale}
-                className={`w-full py-3.5 font-sketch font-bold text-sm rounded-full transition-all flex items-center justify-center gap-2 ${
-                  canOverride
-                    ? 'bg-[#E5484D] text-white hover:bg-red-600 shadow-md'
-                    : 'bg-[#2A2A2A] text-[#E6E6E6]/40 cursor-not-allowed border border-[#E6E6E6]/20'
-                }`}
+                disabled
+                className="w-full py-3.5 font-sketch font-bold text-sm rounded-full flex items-center justify-center gap-2 bg-[#2A2A2A] text-[#E6E6E6]/40 cursor-not-allowed border border-[#E6E6E6]/20"
               >
                 <Lock size={16} />
-                <span>{canOverride ? 'EXECUTIVE OVERRIDE & SCHEDULE' : 'SCHEDULE SALE (BLOCKED - DUAL SIGN-OFF REQUIRED)'}</span>
+                <span>BLOCKED · OVER 60% OFF</span>
               </button>
 
               <div className="text-center pt-1">
                 <button
                   onClick={forceLiveDemo}
-                  className="text-xs text-[#FF8C42] hover:underline font-sketch transition-colors"
+                  className="test-only-btn text-xs px-4 py-1.5 rounded-full"
+                  title="Prototype testing only: skips locks 1 and 2 so you can watch locks 3 and 4 work"
                 >
-                  Demo override: bypass locks 1 and 2 to test fail-safes →
+                  Test only: skip locks 1–2
                 </button>
               </div>
             </div>

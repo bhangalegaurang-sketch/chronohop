@@ -102,7 +102,7 @@ export const CheckoutScreen: React.FC = () => {
         <div className="flex items-center justify-between pb-3 border-b border-[#E6E6E6]/20">
           <div>
             <span className="text-[10px] font-mono text-[#88D49E] uppercase tracking-wider block">
-              Pod Slot Held
+              Time Slot Held
             </span>
             <span className="text-xs text-[#E6E6E6]/70">5-min reservation window</span>
           </div>
@@ -121,7 +121,7 @@ export const CheckoutScreen: React.FC = () => {
             {trip.title}
           </h2>
           <p className="text-xs text-[#E6E6E6]/70 font-chalk">
-            Single passenger pod · Saturday {selectedSlot}
+            One traveller · Saturday {selectedSlot}
           </p>
         </div>
 

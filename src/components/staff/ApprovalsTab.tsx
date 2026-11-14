@@ -1,7 +1,8 @@
 import React from 'react';
-import { useStore } from '../../store/useStore';
+import { useStore, ROLE_LABELS } from '../../store/useStore';
 import { formatMoney } from '../../utils/formatters';
 import { verifyRetypedPrice } from '../../utils/rules';
+import { PRICING_RULES } from '../../config/pricingRules';
 import { Check, User, Stamp, Lock } from 'lucide-react';
 
 export const ApprovalsTab: React.FC = () => {
@@ -27,8 +28,11 @@ export const ApprovalsTab: React.FC = () => {
         <div className="space-y-1">
           <h2 className="font-marker font-bold text-2xl text-[#FFFFFF]">No requests waiting</h2>
           <p className="text-xs text-[#E6E6E6]/70 font-chalk max-w-sm mx-auto">
-            In the Price Gate, enter a discount between 30% and 60% to submit a dual-approval request here.
+            In the Price Gate, enter a discount over 30% and up to 60% to send a request here for a second person to check.
           </p>
+          {retypeError && (
+            <p className="text-xs text-red-400 font-mono pt-1">⚠ {retypeError}</p>
+          )}
         </div>
         <button
           onClick={() => setStaffTab('gate')}
@@ -41,7 +45,9 @@ export const ApprovalsTab: React.FC = () => {
   }
 
   const isMatched = verifyRetypedPrice(retypeInput, pendingApproval.price);
-  const isDifferentAccount = currentRole === 'approver';
+  const isDifferentAccount = currentRole !== pendingApproval.requestedBy;
+  const otherRole = pendingApproval.requestedBy === 'analyst' ? 'approver' : 'analyst';
+  const canSubmit = isDifferentAccount && retypeInput.trim() !== '' && retypeAttemptsRemaining > 0;
 
   return (
     <div className="space-y-4 p-4 text-[#E6E6E6] font-sketch select-none">
@@ -54,18 +60,19 @@ export const ApprovalsTab: React.FC = () => {
         <div className="flex items-center gap-2">
           <User size={16} />
           <span>
-            Signed in as: <strong className="text-white">{currentRole === 'approver' ? 'Marcus (Approver)' : 'Asha (Pricing Analyst)'}</strong>
+            Signed in as: <strong className="text-white">{ROLE_LABELS[currentRole]}</strong>
+            <span className="text-[#E6E6E6]/60"> · Requested by {pendingApproval.requester}</span>
           </span>
         </div>
         {!isDifferentAccount ? (
           <button
-            onClick={() => switchRole('approver')}
+            onClick={() => switchRole(otherRole)}
             className="sketch-btn-orange px-3 py-1 rounded-full text-xs"
           >
-            Switch to Approver Account
+            Switch to {ROLE_LABELS[otherRole]}
           </button>
         ) : (
-          <span className="font-mono text-xs text-[#88D49E] font-bold">✓ Dual-Account Policy Satisfied</span>
+          <span className="font-mono text-xs text-[#88D49E] font-bold">✓ Different person from requester</span>
         )}
       </div>
 
@@ -117,9 +124,9 @@ export const ApprovalsTab: React.FC = () => {
               To approve, retype the exact price yourself:
             </label>
             <span className={`font-mono text-[11px] font-bold ${
-              retypeAttemptsRemaining < 3 ? 'text-red-400' : 'text-[#E6E6E6]/60'
+              retypeAttemptsRemaining < PRICING_RULES.MAX_RETYPE_ATTEMPTS ? 'text-red-400' : 'text-[#E6E6E6]/60'
             }`}>
-              {retypeAttemptsRemaining} of 3 attempts remaining
+              {retypeAttemptsRemaining} of {PRICING_RULES.MAX_RETYPE_ATTEMPTS} attempts remaining
             </span>
           </div>
 
@@ -127,13 +134,18 @@ export const ApprovalsTab: React.FC = () => {
             <input
               id="retype-input"
               type="text"
-              placeholder={`Type exact price (e.g. ${formatMoney(pendingApproval.price)})`}
+              placeholder="Type the exact price shown above"
               value={retypeInput}
               disabled={!isDifferentAccount || retypeAttemptsRemaining === 0}
               onChange={(e) => setRetypeInput(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter' && canSubmit) submitApprovalRetype(); }}
               className="w-full bg-[#141414] border border-[#E6E6E6]/40 font-mono text-base px-3.5 py-2.5 rounded-xl text-[#FFFFFF] focus:outline-none focus:border-[#FF8C42] disabled:opacity-50"
             />
           </div>
+
+          {isDifferentAccount && isMatched && !retypeError && (
+            <p className="text-xs text-[#88D49E] font-mono">✓ Price matches</p>
+          )}
 
           {retypeError && (
             <p className="text-xs text-red-400 font-mono flex items-center gap-1">
@@ -144,7 +156,7 @@ export const ApprovalsTab: React.FC = () => {
 
           {!isDifferentAccount && (
             <p className="text-xs text-[#FF8C42] font-chalk">
-              ⚠ Lock 2 requires a DIFFERENT logged-in operator to approve. Switch account to Marcus above.
+              ⚠ You sent this request. Lock 2 needs a different person to approve it. Switch to {ROLE_LABELS[otherRole]} above.
             </p>
           )}
         </div>
@@ -159,12 +171,10 @@ export const ApprovalsTab: React.FC = () => {
           </button>
 
           <button
-            disabled={!isDifferentAccount || !isMatched || retypeAttemptsRemaining === 0}
+            disabled={!canSubmit}
             onClick={submitApprovalRetype}
             className={`sketch-btn-orange px-6 py-2.5 text-xs rounded-full flex items-center gap-1.5 ${
-              !isDifferentAccount || !isMatched || retypeAttemptsRemaining === 0
-                ? 'opacity-40 cursor-not-allowed'
-                : ''
+              !canSubmit ? 'opacity-40 cursor-not-allowed' : ''
             }`}
           >
             <Check size={14} />

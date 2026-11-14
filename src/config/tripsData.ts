@@ -13,18 +13,13 @@ export interface TripDetail {
   image: string;
   basePrice: number;
   isFlagship?: boolean;
-  telemetry: {
-    adjectives: string;
-    distance: string;
-    eccentricity: string;
-    inclination: string;
-    coordinates: string;
-    escapeVelocity: string;
-    axialTilt: string;
-    atmosphere: string;
-    surfaceGravity: string;
-    safetyStatus: string;
-    chronoCoherence: string;
+  details: {
+    period: string;
+    howFarBack: string;
+    tripLength: string;
+    whatYoullSee: string;
+    climate: string;
+    pace: string;
   };
   observations: string;
   seeAlso: string[];
@@ -42,26 +37,21 @@ export const TRIPS_CATALOG: Record<string, TripDetail> = {
     image: dinoImg,
     basePrice: 2000,
     isFlagship: true,
-    telemetry: {
-      adjectives: 'Late Cretaceous / Maastrichtian',
-      distance: '65,000,000 Earth Years',
-      eccentricity: '0.0167',
-      inclination: '0.000° to timeline',
-      coordinates: '44.8290° N, 105.4290° W',
-      escapeVelocity: '11.186 km/s',
-      axialTilt: '23.44° (Precession Shift)',
-      atmosphere: '28.4% O₂ (Hyper-Oxygenated)',
-      surfaceGravity: '1.00 G (Earth Standard)',
-      safetyStatus: 'Class-A Archival Permit Verified',
-      chronoCoherence: '99.98% Coherent'
+    details: {
+      period: 'Late Cretaceous',
+      howFarBack: '66 million years ago',
+      tripLength: '30-minute guided walk',
+      whatYoullSee: 'Triceratops herds, a T. rex at a distance',
+      climate: 'Warm and humid, river delta',
+      pace: 'Easy walking, guide-led'
     },
-    observations: 'Guided observation of foraging Triceratops prorsus and Tyrannosaurus specimens across subtropical fern plains. Pressurized ChronoPod Mk IV with acoustic dampening ensures zero physical disruption or organic transfer.',
+    observations: 'Guided observation of foraging Triceratops prorsus and Tyrannosaurus specimens across subtropical fern plains. You watch from a quiet, enclosed viewing shelter, so nothing in the past is disturbed.',
     seeAlso: [
       'Tyrannosaur Biomechanics',
       'Late Cretaceous Flora',
       'K-Pg Boundary Horizon',
-      'ChronoPod Mk IV Shield',
-      'Dual Return Beacon Mesh'
+      'Viewing Shelter',
+      'Guide Safety Briefing'
     ]
   },
   london: {
@@ -74,18 +64,13 @@ export const TRIPS_CATALOG: Record<string, TripDetail> = {
     subtitle: 'Late Victorian Britain during the golden era of steam, gaslight, and early science',
     image: londonImg,
     basePrice: 900,
-    telemetry: {
-      adjectives: 'Victorian / Late 19th Century',
-      distance: '131 Earth Years',
-      eccentricity: '0.0167',
-      inclination: '0.000° to timeline',
-      coordinates: '51.5007° N, 0.1246° W',
-      escapeVelocity: '11.186 km/s',
-      axialTilt: '23.44° to ecliptic',
-      atmosphere: '20.8% O₂ (Coal Haze & Maritime Fog)',
-      surfaceGravity: '1.00 G (Earth Standard)',
-      safetyStatus: 'Class-A Archival Permit Verified',
-      chronoCoherence: '100.00% Coherent'
+    details: {
+      period: 'Victorian, late 19th century',
+      howFarBack: '131 years ago',
+      tripLength: '30-minute guided walk',
+      whatYoullSee: 'Big Ben, gaslit streets, hansom cabs',
+      climate: 'Cool, foggy autumn evening',
+      pace: 'Easy walking, guide-led'
     },
     observations: 'Walk the Thames Embankment beneath Victorian gaslamps as Big Ben marks the hour. Includes period-accurate woolen attire, hansom cab transport along Whitehall, and an evening historical briefing.',
     seeAlso: [
@@ -93,7 +78,7 @@ export const TRIPS_CATALOG: Record<string, TripDetail> = {
       'Industrial Thames Trade',
       'Hansom Cab Routes',
       'Gaslight Municipal Grid',
-      'Atmospheric Bio-Filtration'
+      'Victorian Street Food'
     ]
   },
   giza: {
@@ -106,26 +91,21 @@ export const TRIPS_CATALOG: Record<string, TripDetail> = {
     subtitle: 'Old Kingdom Egypt during the peak mobilization of skilled builders along the Nile',
     image: pyrImg,
     basePrice: 1400,
-    telemetry: {
-      adjectives: 'Ancient Egyptian / 4th Dynasty',
-      distance: '4,586 Earth Years',
-      eccentricity: '0.0167',
-      inclination: '0.000° to timeline',
-      coordinates: '29.9792° N, 31.1342° E',
-      escapeVelocity: '11.186 km/s',
-      axialTilt: '23.95° (Historical Precession)',
-      atmosphere: '20.9% O₂ (Arid Nile Basin)',
-      surfaceGravity: '1.00 G (Earth Standard)',
-      safetyStatus: 'Class-A Archival Permit Verified',
-      chronoCoherence: '99.99% Coherent'
+    details: {
+      period: 'Old Kingdom Egypt, 4th Dynasty',
+      howFarBack: 'About 4,600 years ago',
+      tripLength: '30-minute guided visit',
+      whatYoullSee: 'Builders hauling limestone up the ramps',
+      climate: 'Hot and dry, Nile valley',
+      pace: 'Mostly standing, shaded platform'
     },
-    observations: 'Stationed on a shaded observation platform overlooking the construction ramps. Watch master stonemasons position 2.5-ton polished Tura limestone blocks with millimeter precision according to celestial alignments.',
+    observations: 'Stationed on a shaded observation platform overlooking the construction ramps. Watch master stonemasons position 2.5-ton polished Tura limestone blocks with millimeter precision lined up with the sun and stars.',
     seeAlso: [
       'Khufu Horizon Geometry',
       'Tura Limestone Quarrying',
       'Nile Inundation Harbor',
       'Papyrus Logbooks of Merer',
-      'ChronoPod Mk IV Shield'
+      'Viewing Shelter'
     ]
   }
 };

@@ -196,6 +196,20 @@
   box-shadow: 1px 1px 0px #E6E6E6;
 }
 
+/* Prototype-only shortcut: grey and dashed so it never reads as a real staff action */
+.test-only-btn {
+  background-color: transparent;
+  color: #9A9A9A;
+  border: 1.5px dashed #6A6A6A;
+  font-family: 'JetBrains Mono', monospace;
+  transition: all 0.12s ease-in-out;
+}
+
+.test-only-btn:hover {
+  color: #CFCFCF;
+  border-color: #9A9A9A;
+}
+
 /* Secondary Sage Green Button (#88D49E) */
 .sketch-btn-green {
   background-color: #88D49E;

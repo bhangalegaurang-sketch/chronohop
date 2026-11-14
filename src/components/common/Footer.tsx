@@ -9,7 +9,7 @@ export const Footer: React.FC = () => {
             ChronoHop
           </p>
           <span className="font-mono text-xs text-[#FF8C42]">
-            PRD Rules: 336 seats · $100k Budget · 33 Max Sale Seats
+            Rules: 336 slots · $100k budget · 33 sale seats
           </span>
         </div>
 

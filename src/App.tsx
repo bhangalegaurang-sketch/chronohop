@@ -65,7 +65,7 @@ export const App: React.FC = () => {
             <CustomerPhone />
           </section>
         ) : (
-          <section aria-label="ChronoHop Mission Control" className="w-full my-3 p-4 sm:p-0">
+          <section aria-label="ChronoHop Pricing Control Room" className="w-full my-3 p-4 sm:p-0">
             <ControllerPage />
           </section>
         )}

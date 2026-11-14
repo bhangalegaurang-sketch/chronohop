@@ -68,10 +68,10 @@ export const SearchScreen: React.FC = () => {
       {/* Header & Search */}
       <div className="sketch-card rounded-[24px] p-4">
         <h1 className="text-2xl font-marker font-bold text-[#FFFFFF] tracking-tight">
-          Destinations &amp; Chrono-Nodes
+          Destinations
         </h1>
         <p className="text-xs text-[#E6E6E6]/80 font-chalk mt-0.5">
-          Select any era to inspect telemetry, atmospheric parameters, and available pod slots.
+          Pick any era to see trip details and open time slots.
         </p>
 
         {/* Chalkboard Search Bar */}
@@ -135,12 +135,12 @@ export const SearchScreen: React.FC = () => {
                   <span className="text-xl font-bold font-sketch text-[#FF8C42] block">
                     {item.price}
                   </span>
-                  <span className="text-[10px] text-[#E6E6E6]/50">per pod</span>
+                  <span className="text-[10px] text-[#E6E6E6]/50">per traveller</span>
                 </div>
               </div>
 
               <div className="mt-2.5 pt-2 border-t border-[#E6E6E6]/20 flex items-center justify-between text-xs">
-                <span className="text-xs font-sketch text-[#E6E6E6]/60">Single pod slot</span>
+                <span className="text-xs font-sketch text-[#E6E6E6]/60">One traveller per slot</span>
                 <button className="sketch-btn-orange text-xs px-3.5 py-1 rounded-full">
                   INSPECT →
                 </button>
