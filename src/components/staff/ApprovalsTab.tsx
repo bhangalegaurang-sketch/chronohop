@@ -1,8 +1,8 @@
 import React from 'react';
 import { useStore } from '../../store/useStore';
-import { Icons } from '../icons/Icons';
 import { formatMoney } from '../../utils/formatters';
 import { verifyRetypedPrice } from '../../utils/rules';
+import { Check, User, Stamp, Lock } from 'lucide-react';
 
 export const ApprovalsTab: React.FC = () => {
   const {
@@ -20,21 +20,21 @@ export const ApprovalsTab: React.FC = () => {
 
   if (!pendingApproval) {
     return (
-      <div className="p-8 text-center text-staff-text space-y-4">
-        <div className="w-16 h-16 rounded-full bg-[#0E2019] text-staff-ok flex items-center justify-center mx-auto border border-staff-border">
-          <Icons.Check size={32} />
+      <div className="p-8 text-center text-[#E6E6E6] space-y-4 font-sketch">
+        <div className="w-16 h-16 rounded-full bg-[#202020] text-[#88D49E] flex items-center justify-center mx-auto border border-[#88D49E]/40 shadow-xs">
+          <Check size={32} />
         </div>
         <div className="space-y-1">
-          <h2 className="font-mono font-bold text-lg text-staff-text">No requests waiting</h2>
-          <p className="text-xs text-staff-muted max-w-sm mx-auto">
-            In the Price Gate, type a discount between 30 and 60 percent to send one here.
+          <h2 className="font-marker font-bold text-2xl text-[#FFFFFF]">No requests waiting</h2>
+          <p className="text-xs text-[#E6E6E6]/70 font-chalk max-w-sm mx-auto">
+            In the Price Gate, enter a discount between 30% and 60% to submit a dual-approval request here.
           </p>
         </div>
         <button
           onClick={() => setStaffTab('gate')}
-          className="px-4 py-2 bg-staff-panel border border-staff-border text-xs font-semibold rounded-lg hover:border-staff-brass transition-colors"
+          className="sketch-btn-orange px-5 py-2 text-xs rounded-full inline-flex items-center gap-1.5"
         >
-          Return to Price Gate
+          <span>RETURN TO PRICE GATE</span>
         </button>
       </div>
     );
@@ -44,82 +44,82 @@ export const ApprovalsTab: React.FC = () => {
   const isDifferentAccount = currentRole === 'approver';
 
   return (
-    <div className="space-y-4 p-4 text-staff-text overflow-y-auto">
+    <div className="space-y-4 p-4 text-[#E6E6E6] font-sketch select-none">
       {/* Account Identity Switcher Notice */}
-      <div className={`p-3 rounded-xl border flex items-center justify-between text-xs ${
+      <div className={`p-3.5 rounded-2xl border flex items-center justify-between text-xs ${
         isDifferentAccount
-          ? 'bg-[#0E2019] border-staff-ok/40 text-staff-ok'
-          : 'bg-[#2A1810] border-staff-brass/50 text-staff-brass'
+          ? 'bg-[#1E2822] border-[#88D49E]/50 text-[#88D49E]'
+          : 'bg-[#2A1E14] border-[#FF8C42]/50 text-[#FF8C42]'
       }`}>
         <div className="flex items-center gap-2">
-          <Icons.User size={16} />
+          <User size={16} />
           <span>
-            Signed in as: <strong>{currentRole === 'approver' ? 'Marcus (Approver)' : 'Asha (Pricing Analyst)'}</strong>
+            Signed in as: <strong className="text-white">{currentRole === 'approver' ? 'Marcus (Approver)' : 'Asha (Pricing Analyst)'}</strong>
           </span>
         </div>
         {!isDifferentAccount ? (
           <button
             onClick={() => switchRole('approver')}
-            className="px-2.5 py-1 bg-staff-brass text-staff-bg font-bold rounded text-[11px] hover:bg-[#D49826] transition-colors"
+            className="sketch-btn-orange px-3 py-1 rounded-full text-xs"
           >
-            Switch account to Approver
+            Switch to Approver Account
           </button>
         ) : (
-          <span className="font-mono text-[10.5px] text-staff-ok font-semibold">Different account verified</span>
+          <span className="font-mono text-xs text-[#88D49E] font-bold">✓ Dual-Account Policy Satisfied</span>
         )}
       </div>
 
       {/* Main Approval Request Card */}
-      <div className="bg-staff-panel border border-staff-border rounded-2xl p-4 space-y-4 shadow-md">
-        <div className="flex items-center justify-between pb-3 border-b border-staff-border text-xs">
+      <div className="sketch-card rounded-[24px] p-5 space-y-4 bg-[#202020]">
+        <div className="flex items-center justify-between pb-3 border-b border-[#E6E6E6]/20 text-xs">
           <div className="flex items-center gap-2">
-            <Icons.Stamp size={16} className="text-staff-brass" />
-            <span className="font-mono font-bold uppercase tracking-wider text-staff-text">
-              APPROVAL NEEDED · 30 TO 60% BELOW LIST
+            <Stamp size={18} className="text-[#FF8C42]" />
+            <span className="font-marker font-bold text-xl text-[#FFFFFF]">
+              Approval Needed · 30% to 60% Below List
             </span>
           </div>
-          <span className="font-mono text-staff-muted text-[11px]">
-            Trip: Dinosaur Walk (flagship)
+          <span className="font-mono text-[#88D49E] text-xs font-bold">
+            Flagship: Dinosaur Walk
           </span>
         </div>
 
         {/* List Price, New Price, and Drop side by side */}
-        <div className="grid grid-cols-3 gap-3 bg-[#0A1612] p-4 rounded-xl border border-staff-border text-center">
+        <div className="grid grid-cols-3 gap-3 bg-[#1A1A1A] p-4 rounded-2xl border border-[#E6E6E6]/30 text-center">
           <div>
-            <span className="text-[10px] font-bold text-staff-muted uppercase tracking-wider block">
-              List price
+            <span className="text-[10px] font-bold text-[#E6E6E6]/60 uppercase tracking-wider block">
+              Standard List Price
             </span>
-            <span className="font-mono font-bold text-xl text-staff-text sm:text-2xl">$2,000</span>
+            <span className="font-mono font-bold text-xl text-[#FFFFFF] sm:text-2xl">$2,000</span>
           </div>
-          <div className="border-x border-staff-border">
-            <span className="text-[10px] font-bold text-staff-muted uppercase tracking-wider block">
-              New price
+          <div className="border-x border-[#E6E6E6]/20">
+            <span className="text-[10px] font-bold text-[#E6E6E6]/60 uppercase tracking-wider block">
+              Requested Price
             </span>
-            <span className="font-mono font-black text-xl text-staff-glow sm:text-2xl">
+            <span className="font-mono font-black text-xl text-[#FF8C42] sm:text-2xl">
               {formatMoney(pendingApproval.price)}
             </span>
           </div>
           <div>
-            <span className="text-[10px] font-bold text-staff-muted uppercase tracking-wider block">
-              Drop
+            <span className="text-[10px] font-bold text-[#E6E6E6]/60 uppercase tracking-wider block">
+              Discount
             </span>
-            <span className="font-mono font-bold text-xl text-staff-brass sm:text-2xl">
+            <span className="font-mono font-bold text-xl text-[#88D49E] sm:text-2xl">
               {pendingApproval.discountPct}%
             </span>
           </div>
         </div>
 
         {/* Retype the final price */}
-        <div className="space-y-2 bg-[#0A1612] p-4 rounded-xl border border-staff-border">
+        <div className="space-y-2 bg-[#1A1A1A] p-4 rounded-2xl border border-[#E6E6E6]/30">
           <div className="flex items-center justify-between text-xs">
-            <label htmlFor="retype-input" className="font-bold text-staff-muted uppercase tracking-wider text-[11px] flex items-center gap-1.5">
-              <Icons.Lock size={13} className="text-staff-brass" />
-              To approve, type the new price yourself
+            <label htmlFor="retype-input" className="font-bold text-[#E6E6E6]/80 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+              <Lock size={13} className="text-[#FF8C42]" />
+              To approve, retype the exact price yourself:
             </label>
             <span className={`font-mono text-[11px] font-bold ${
-              retypeAttemptsRemaining < 3 ? 'text-staff-danger' : 'text-staff-muted'
+              retypeAttemptsRemaining < 3 ? 'text-red-400' : 'text-[#E6E6E6]/60'
             }`}>
-              {retypeAttemptsRemaining} tries left
+              {retypeAttemptsRemaining} of 3 attempts remaining
             </span>
           </div>
 
@@ -127,86 +127,48 @@ export const ApprovalsTab: React.FC = () => {
             <input
               id="retype-input"
               type="text"
-              placeholder={`$ (expected: ${formatMoney(pendingApproval.price)})`}
+              placeholder={`Type exact price (e.g. ${formatMoney(pendingApproval.price)})`}
               value={retypeInput}
+              disabled={!isDifferentAccount || retypeAttemptsRemaining === 0}
               onChange={(e) => setRetypeInput(e.target.value)}
-              className="w-full bg-staff-panel border border-staff-border text-staff-text font-mono text-base px-3.5 py-2.5 rounded-lg focus:outline-none focus:border-staff-brass"
+              className="w-full bg-[#141414] border border-[#E6E6E6]/40 font-mono text-base px-3.5 py-2.5 rounded-xl text-[#FFFFFF] focus:outline-none focus:border-[#FF8C42] disabled:opacity-50"
             />
-            {isMatched && (
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-staff-ok flex items-center gap-1 text-xs font-bold font-mono">
-                <Icons.Check size={16} /> MATCH
-              </span>
-            )}
           </div>
 
-          {retypeError ? (
-            <div className="text-xs text-staff-dangerLight bg-staff-danger/10 border border-staff-danger/30 p-2.5 rounded-lg flex items-center gap-2">
-              <Icons.Alert size={14} />
+          {retypeError && (
+            <p className="text-xs text-red-400 font-mono flex items-center gap-1">
+              <span>⚠</span>
               <span>{retypeError}</span>
-            </div>
-          ) : isMatched ? (
-            <div className="text-xs text-staff-ok bg-staff-ok/10 border border-staff-ok/30 p-2.5 rounded-lg flex items-center gap-2">
-              <Icons.Check size={14} />
-              <span>Your typed price matches. You are signed in as a different person from the requester.</span>
-            </div>
-          ) : (
-            <p className="text-[11px] text-staff-muted leading-relaxed">
-              Retyping stops an approver clicking yes without reading. 3 wrong tries cancels the request.
+            </p>
+          )}
+
+          {!isDifferentAccount && (
+            <p className="text-xs text-[#FF8C42] font-chalk">
+              ⚠ Lock 2 requires a DIFFERENT logged-in operator to approve. Switch account to Marcus above.
             </p>
           )}
         </div>
 
-        {/* Worst Case If Wrong Panel */}
-        <div className="bg-[#0A1612] p-4 rounded-xl border border-staff-border space-y-2 text-xs">
-          <span className="text-[11px] font-bold text-staff-muted uppercase tracking-wider flex items-center gap-1.5">
-            <Icons.Shield size={13} className="text-staff-brass" />
-            Worst case if this price is wrong
-          </span>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
-            <div className="flex justify-between p-2 rounded bg-staff-panel border border-staff-border">
-              <span className="text-staff-muted">Sale seats at this price:</span>
-              <strong className="font-mono text-staff-text">{pendingApproval.cap}</strong>
-            </div>
-            <div className="flex justify-between p-2 rounded bg-staff-panel border border-staff-border">
-              <span className="text-staff-muted">Most this sale can lose:</span>
-              <strong className="font-mono text-staff-glow">about {formatMoney(pendingApproval.worstCaseLoss)}</strong>
-            </div>
-          </div>
-          <div className="flex justify-between text-[11px] text-staff-muted pt-1">
-            <span>Speed breaker:</span>
-            <strong className="text-staff-text">pauses at 5x forecast in 5 min</strong>
-          </div>
-        </div>
-
-        {/* Audit Panel */}
-        <div className="bg-[#08120E] p-3 rounded-xl border border-staff-border text-xs flex items-center justify-between text-staff-muted">
-          <div>
-            <span className="font-mono text-[10px] uppercase font-bold text-staff-brass block">Audit Record:</span>
-            <span>Requester: <strong>{pendingApproval.requester}</strong> · Discount: <strong>{pendingApproval.discountPct}%</strong></span>
-          </div>
-          <span className="font-mono text-[11px] text-staff-muted">{pendingApproval.submittedAt}</span>
-        </div>
-
-        {/* Actions Buttons */}
-        <div className="flex items-center gap-3 pt-2">
+        {/* Actions */}
+        <div className="flex items-center justify-end gap-3 pt-2">
           <button
             onClick={rejectApproval}
-            className="flex-1 py-3 px-4 bg-staff-panel hover:bg-[#1A2E26] border border-staff-border text-staff-text font-bold text-xs rounded-xl transition-colors min-h-[44px]"
+            className="px-4 py-2 rounded-full border border-[#E6E6E6]/30 text-xs text-[#E6E6E6]/70 hover:text-white hover:bg-white/5 transition-colors"
           >
-            Reject request
+            Reject &amp; Return to Desk
           </button>
 
           <button
+            disabled={!isDifferentAccount || !isMatched || retypeAttemptsRemaining === 0}
             onClick={submitApprovalRetype}
-            disabled={!isMatched || !isDifferentAccount}
-            className={`flex-1 py-3 px-4 font-mono font-bold text-xs rounded-xl transition-all shadow-md flex items-center justify-center gap-2 min-h-[44px] ${
-              isMatched && isDifferentAccount
-                ? 'bg-staff-brass text-staff-bg hover:bg-[#D49826]'
-                : 'bg-[#1C2822] text-staff-muted cursor-not-allowed border border-staff-border'
+            className={`sketch-btn-orange px-6 py-2.5 text-xs rounded-full flex items-center gap-1.5 ${
+              !isDifferentAccount || !isMatched || retypeAttemptsRemaining === 0
+                ? 'opacity-40 cursor-not-allowed'
+                : ''
             }`}
           >
-            <Icons.Check size={16} />
-            Approve and schedule
+            <Check size={14} />
+            <span>CONFIRM &amp; AUTHORIZE PROMO</span>
           </button>
         </div>
       </div>

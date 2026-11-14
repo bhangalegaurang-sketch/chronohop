@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useStore } from '../../store/useStore';
-import { Icons } from '../icons/Icons';
+import { UserCheck, Zap, Play, User, RotateCcw, Lock } from 'lucide-react';
 
 interface CursorPosition {
   left: number;
@@ -32,18 +32,18 @@ export const DemoControlsBar: React.FC = () => {
   });
 
   return (
-    <footer className="sticky bottom-3 z-40 px-4 py-2 w-full flex justify-center pointer-events-none select-none">
+    <footer className="sticky bottom-3 z-40 px-4 py-2 w-full flex justify-center pointer-events-none select-none font-sketch">
       {/* Floating Bottom Chin Island Bar */}
-      <div className="pointer-events-auto max-w-6xl w-full bg-[#07110E]/95 backdrop-blur-md border-2 border-[#1E362A] rounded-full p-1.5 shadow-[0_12px_40px_rgba(0,0,0,0.85)] flex flex-wrap items-center justify-between gap-3 text-xs">
+      <div className="pointer-events-auto max-w-6xl w-full bg-[#181818]/95 backdrop-blur-md border-2 border-[#E6E6E6]/40 rounded-full p-2 shadow-[0_12px_32px_rgba(0,0,0,0.6)] flex flex-wrap items-center justify-between gap-3 text-xs text-[#E6E6E6]">
         {/* Left: Section Brand / Status */}
         <div className="flex items-center gap-2 pl-3">
-          <span className="font-digits font-bold uppercase tracking-wider text-staff-brass flex items-center gap-1.5 text-[11px]">
-            <Icons.Bolt size={14} />
-            Demo controls
+          <span className="font-sketch font-bold uppercase tracking-wider text-[#FF8C42] flex items-center gap-1.5 text-xs">
+            <span>✳</span>
+            <span>SIMULATOR CONTROLS</span>
           </span>
           {isRushActive && (
-            <span className="bg-staff-danger text-white text-[10px] font-bold px-2 py-0.5 rounded-full animate-pulse shadow">
-              Rush active
+            <span className="bg-red-500 text-white text-[10px] font-mono font-bold px-2 py-0.5 rounded-full animate-pulse shadow-xs">
+              RUSH ACTIVE
             </span>
           )}
         </div>
@@ -61,7 +61,7 @@ export const DemoControlsBar: React.FC = () => {
               opacity: cursorPosition.opacity,
             }}
             transition={{ type: "spring", stiffness: 450, damping: 32 }}
-            className="absolute z-0 h-9 rounded-full brass-gradient shadow-md pointer-events-none"
+            className="absolute z-0 h-9 rounded-full bg-[#FF8C42]/20 border border-[#FF8C42]/50 shadow-xs pointer-events-none"
           />
 
           {/* Tab 1: One customer books */}
@@ -71,9 +71,9 @@ export const DemoControlsBar: React.FC = () => {
             onClick={() => bookSeat(1)}
             title="Simulate 1 customer completing purchase"
           >
-            <span className="flex items-center gap-1.5">
-              <Icons.User size={13} className="text-staff-ok group-hover:text-cust-ink transition-colors" />
-              One customer books
+            <span className="flex items-center gap-1.5 text-[#E6E6E6] hover:text-[#FFFFFF]">
+              <UserCheck size={14} className="text-[#88D49E]" />
+              Simulate Booking
             </span>
           </InteractiveTab>
 
@@ -84,9 +84,9 @@ export const DemoControlsBar: React.FC = () => {
             onClick={triggerRush}
             title="Simulate rapid booking surge from deal aggregator"
           >
-            <span className="flex items-center gap-1.5">
-              <Icons.Bolt size={13} className="text-staff-dangerLight group-hover:text-cust-ink transition-colors" />
-              Deal-site rush
+            <span className="flex items-center gap-1.5 text-[#E6E6E6] hover:text-[#FFFFFF]">
+              <Zap size={14} className="text-[#FF8C42]" />
+              Deal-site Rush
             </span>
           </InteractiveTab>
 
@@ -96,9 +96,9 @@ export const DemoControlsBar: React.FC = () => {
             onClick={forceLiveDemo}
             title="Fast forward schedule & publish immediately"
           >
-            <span className="flex items-center gap-1.5 text-staff-brass group-hover:text-cust-ink transition-colors">
-              <Icons.Play size={13} />
-              Go live now
+            <span className="flex items-center gap-1.5 text-[#FF8C42] hover:text-white">
+              <Play size={14} />
+              Publish Now
             </span>
           </InteractiveTab>
 
@@ -108,9 +108,9 @@ export const DemoControlsBar: React.FC = () => {
             onClick={() => switchRole()}
             title="Switch operator role (Analyst / Approver)"
           >
-            <span className="flex items-center gap-1.5 text-staff-glow group-hover:text-cust-ink transition-colors">
-              <Icons.User size={13} />
-              Switch role ({currentRole === 'analyst' ? 'analyst' : 'approver'})
+            <span className="flex items-center gap-1.5 text-[#88D49E] hover:text-white">
+              <User size={14} />
+              Role: {currentRole === 'analyst' ? 'Asha (Analyst)' : 'Marcus (Approver)'}
             </span>
           </InteractiveTab>
 
@@ -118,44 +118,42 @@ export const DemoControlsBar: React.FC = () => {
           <InteractiveTab
             setCursorPosition={setCursorPosition}
             onClick={resetAll}
-            title="Reset prototype state"
+            title="Reset system to clean prototype state"
           >
-            <span className="flex items-center gap-1.5 text-staff-dangerLight group-hover:text-cust-ink transition-colors">
-              <Icons.RotateCcw size={13} />
-              Reset
+            <span className="flex items-center gap-1.5 text-red-300 hover:text-white">
+              <RotateCcw size={14} />
+              Reset State
             </span>
           </InteractiveTab>
         </ul>
 
-        {/* Right: Lock Toggles */}
-        <div className="flex items-center gap-3 bg-[#050C09] px-3.5 py-1.5 rounded-full border border-staff-border pr-4">
-          {/* Lock 1 Cap Toggle */}
-          <label className="flex items-center gap-1.5 cursor-pointer text-staff-text select-none group">
-            <input
-              type="checkbox"
-              checked={lock1CapEnabled}
-              onChange={toggleLock1}
-              className="rounded bg-[#07110E] border-staff-border text-staff-brass focus:ring-staff-brass w-3.5 h-3.5 cursor-pointer"
-            />
-            <span className="font-digits text-[10.5px] font-semibold group-hover:text-staff-brass transition-colors">
-              Lock 1 (Cap) <strong className={lock1CapEnabled ? 'text-staff-ok' : 'text-staff-danger'}>{lock1CapEnabled ? 'ON' : 'OFF'}</strong>
-            </span>
-          </label>
+        {/* Right: Lock Armed Toggles */}
+        <div className="flex items-center gap-2 pr-3">
+          <button
+            onClick={toggleLock1}
+            className={`px-3 py-1 rounded-full text-[11px] font-mono font-bold border transition-colors flex items-center gap-1 ${
+              lock1CapEnabled
+                ? 'bg-[#88D49E]/15 text-[#88D49E] border-[#88D49E]/50'
+                : 'bg-red-500/15 text-red-300 border-red-500/50'
+            }`}
+            title="Toggle Lock 1: Cap enforcement"
+          >
+            <Lock size={11} />
+            <span>Lock 1: {lock1CapEnabled ? 'ON' : 'OFF'}</span>
+          </button>
 
-          <span className="text-staff-border">|</span>
-
-          {/* Lock 4 Breaker Toggle */}
-          <label className="flex items-center gap-1.5 cursor-pointer text-staff-text select-none group">
-            <input
-              type="checkbox"
-              checked={lock4BreakerEnabled}
-              onChange={toggleLock4}
-              className="rounded bg-[#07110E] border-staff-border text-staff-brass focus:ring-staff-brass w-3.5 h-3.5 cursor-pointer"
-            />
-            <span className="font-digits text-[10.5px] font-semibold group-hover:text-staff-brass transition-colors">
-              Lock 4 (Breaker) <strong className={lock4BreakerEnabled ? 'text-staff-ok' : 'text-staff-danger'}>{lock4BreakerEnabled ? 'ON' : 'OFF'}</strong>
-            </span>
-          </label>
+          <button
+            onClick={toggleLock4}
+            className={`px-3 py-1 rounded-full text-[11px] font-mono font-bold border transition-colors flex items-center gap-1 ${
+              lock4BreakerEnabled
+                ? 'bg-[#88D49E]/15 text-[#88D49E] border-[#88D49E]/50'
+                : 'bg-red-500/15 text-red-300 border-red-500/50'
+            }`}
+            title="Toggle Lock 4: Speed Breaker rate limiter"
+          >
+            <Lock size={11} />
+            <span>Lock 4: {lock4BreakerEnabled ? 'ON' : 'OFF'}</span>
+          </button>
         </div>
       </div>
     </footer>
@@ -164,16 +162,16 @@ export const DemoControlsBar: React.FC = () => {
 
 interface InteractiveTabProps {
   children: React.ReactNode;
-  onClick: () => void;
   setCursorPosition: React.Dispatch<React.SetStateAction<CursorPosition>>;
+  onClick?: () => void;
   disabled?: boolean;
   title?: string;
 }
 
 const InteractiveTab: React.FC<InteractiveTabProps> = ({
   children,
-  onClick,
   setCursorPosition,
+  onClick,
   disabled = false,
   title,
 }) => {
@@ -182,26 +180,27 @@ const InteractiveTab: React.FC<InteractiveTabProps> = ({
   return (
     <li
       ref={ref}
-      title={title}
       onMouseEnter={() => {
-        if (!ref.current || disabled) return;
+        if (!ref?.current || disabled) return;
         const { width } = ref.current.getBoundingClientRect();
         setCursorPosition({
+          left: ref.current.offsetLeft,
           width,
           opacity: 1,
-          left: ref.current.offsetLeft,
         });
       }}
-      onClick={() => {
-        if (!disabled) onClick();
-      }}
-      className={`group relative z-10 block cursor-pointer px-3 py-1.5 text-[11px] font-digits font-bold rounded-full transition-colors duration-150 min-h-[38px] flex items-center select-none ${
-        disabled
-          ? 'opacity-35 cursor-not-allowed text-staff-muted'
-          : 'text-staff-text hover:text-cust-ink'
+      className={`relative z-10 block cursor-pointer px-3 py-1.5 text-xs font-sketch transition-colors ${
+        disabled ? 'opacity-40 cursor-not-allowed' : 'hover:text-white'
       }`}
     >
-      {children}
+      <button
+        disabled={disabled}
+        onClick={onClick}
+        title={title}
+        className="flex items-center gap-1 focus:outline-none"
+      >
+        {children}
+      </button>
     </li>
   );
 };

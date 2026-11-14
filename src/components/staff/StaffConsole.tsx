@@ -1,54 +1,61 @@
 import React from 'react';
 import { useStore } from '../../store/useStore';
-import { ChronoLogo, Icons } from '../icons/Icons';
 import { FourLocksStrip } from './FourLocksStrip';
 import { PriceGateTab } from './PriceGateTab';
 import { ApprovalsTab } from './ApprovalsTab';
 import { TimelineDeskTab } from './TimelineDeskTab';
+import { Shield, CheckSquare, Activity, User } from 'lucide-react';
 
 export const StaffConsole: React.FC = () => {
   const { staffTab, setStaffTab, pendingApproval, currentRole, switchRole } = useStore();
 
   return (
-    <div className="flex-1 flex flex-col h-[844px] bg-[#0A1612] border-2 border-staff-border rounded-[28px] overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.8)] min-w-[340px] max-w-[900px]">
+    <div className="flex-1 flex flex-col h-[844px] bg-[#1E1E1E] border-2 border-[#E6E6E6]/40 rounded-[28px] overflow-hidden shadow-[4px_6px_0px_rgba(230,230,230,0.12)] min-w-[340px] max-w-[960px] font-sketch select-none text-[#E6E6E6]">
       {/* Console Top Navigation Bar */}
-      <div className="bg-[#07110E] border-b border-[#1A3026] px-4 py-3 flex flex-wrap items-center justify-between gap-3 shadow-md">
+      <div className="bg-[#181818] border-b border-[#E6E6E6]/20 px-5 py-3.5 flex flex-wrap items-center justify-between gap-3 shadow-xs">
         <div className="flex items-center gap-2.5">
-          <ChronoLogo size={28} />
-          <span className="font-fraunces font-black text-xl tracking-tight text-staff-text">
-            ChronoHop Control
-          </span>
-          <span className="text-[10px] font-digits px-2 py-0.5 rounded bg-[#0F221B] border border-[#224434] text-staff-brass font-bold">
-            v2.4
-          </span>
+          <span className="text-2xl text-[#FF8C42] font-black leading-none">✳</span>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="font-marker font-bold text-xl text-[#FFFFFF] tracking-tight">
+                ChronoHop Control
+              </span>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#2A2A2A] border border-[#FF8C42]/40 text-[#FF8C42] font-bold">
+                FOUR-LOCKS v2.4
+              </span>
+            </div>
+            <p className="text-[11px] text-[#E6E6E6]/70 font-chalk">
+              Pricing governance, dual-authorization &amp; speed breaker telemetry
+            </p>
+          </div>
         </div>
 
         {/* Console Mode Tab Switcher */}
-        <div className="flex items-center gap-1.5 bg-[#050C09] p-1.5 rounded-xl border border-staff-border shadow-inner">
+        <div className="flex items-center gap-1.5 bg-[#252525] p-1.5 rounded-2xl border border-white/10 shadow-inner">
           <button
             onClick={() => setStaffTab('gate')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-digits font-bold transition-all flex items-center gap-1.5 ${
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-sketch font-bold transition-all flex items-center gap-1.5 ${
               staffTab === 'gate'
-                ? 'brass-btn font-black shadow-md'
-                : 'text-staff-muted hover:text-staff-text hover:bg-[#0E2019]'
+                ? 'bg-[#E6E6E6] text-[#1A1A1A] shadow-[2px_2px_0px_#FF8C42]'
+                : 'text-[#E6E6E6]/70 hover:text-white hover:bg-white/5'
             }`}
           >
-            <Icons.Gate size={14} />
+            <Shield size={14} className={staffTab === 'gate' ? 'text-[#FF8C42]' : 'text-[#88D49E]'} />
             Price Gate
           </button>
 
           <button
             onClick={() => setStaffTab('approvals')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-digits font-bold transition-all flex items-center gap-1.5 relative ${
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-sketch font-bold transition-all flex items-center gap-1.5 relative ${
               staffTab === 'approvals'
-                ? 'brass-btn font-black shadow-md'
-                : 'text-staff-muted hover:text-staff-text hover:bg-[#0E2019]'
+                ? 'bg-[#E6E6E6] text-[#1A1A1A] shadow-[2px_2px_0px_#FF8C42]'
+                : 'text-[#E6E6E6]/70 hover:text-white hover:bg-white/5'
             }`}
           >
-            <Icons.Stamp size={14} />
+            <CheckSquare size={14} className={staffTab === 'approvals' ? 'text-[#FF8C42]' : 'text-[#88D49E]'} />
             Approvals
             {pendingApproval && (
-              <span className="bg-staff-danger text-white text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center animate-pulse shadow">
+              <span className="bg-[#E5484D] text-white text-[10px] font-mono font-black w-4 h-4 rounded-full flex items-center justify-center animate-pulse shadow-xs">
                 1
               </span>
             )}
@@ -56,26 +63,28 @@ export const StaffConsole: React.FC = () => {
 
           <button
             onClick={() => setStaffTab('desk')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-digits font-bold transition-all flex items-center gap-1.5 ${
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-sketch font-bold transition-all flex items-center gap-1.5 ${
               staffTab === 'desk'
-                ? 'brass-btn font-black shadow-md'
-                : 'text-staff-muted hover:text-staff-text hover:bg-[#0E2019]'
+                ? 'bg-[#E6E6E6] text-[#1A1A1A] shadow-[2px_2px_0px_#FF8C42]'
+                : 'text-[#E6E6E6]/70 hover:text-white hover:bg-white/5'
             }`}
           >
-            <Icons.Desk size={14} />
+            <Activity size={14} className={staffTab === 'desk' ? 'text-[#FF8C42]' : 'text-[#88D49E]'} />
             Timeline Desk
           </button>
         </div>
 
-        {/* Operator Badge Switcher */}
+        {/* Operator Role Badge Switcher */}
         <div className="flex items-center gap-2 text-xs">
           <button
             onClick={() => switchRole()}
-            className="flex items-center gap-1.5 bg-[#0B1A14] border border-[#1F3D2F] hover:border-staff-brass px-3 py-1.5 rounded-lg text-staff-text text-[11px] font-digits transition-all shadow-sm"
+            className="flex items-center gap-1.5 bg-[#252525] border border-[#FF8C42]/50 hover:border-[#FF8C42] px-3 py-1.5 rounded-xl text-[#E6E6E6] text-xs font-sketch transition-all shadow-xs"
             title="Toggle between Analyst and Approver accounts"
           >
-            <Icons.User size={13} className="text-staff-brass" />
-            <span className="font-bold">{currentRole === 'analyst' ? 'Asha (Analyst)' : 'Marcus (Approver)'}</span>
+            <User size={13} className="text-[#FF8C42]" />
+            <span className="font-bold">
+              {currentRole === 'analyst' ? 'Asha (Analyst)' : 'Marcus (Approver)'}
+            </span>
           </button>
         </div>
       </div>
@@ -84,7 +93,7 @@ export const StaffConsole: React.FC = () => {
       <FourLocksStrip />
 
       {/* Tab Panels */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 visible-scrollbar-y p-2">
         {staffTab === 'gate' && <PriceGateTab />}
         {staffTab === 'approvals' && <ApprovalsTab />}
         {staffTab === 'desk' && <TimelineDeskTab />}

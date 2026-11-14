@@ -135,7 +135,7 @@ export const TRIPS_CATALOG: Record<string, TripDetail> = {
     shortTitle: 'Mars 2154',
     era: '2154 CE · Red Planet Colony',
     location: 'Olympus Mons Caldera & Basin, Mars',
-    heroHeadline: 'Explore humanity’s first self-sustaining settlement on Mars',
+    heroHeadline: 'Mars has the largest dust storms in the solar system',
     subtitle: 'A working research colony nestled inside the volcanic shielding of Olympus Mons',
     image: marsImg,
     basePrice: 2400,

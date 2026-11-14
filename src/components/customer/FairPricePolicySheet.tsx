@@ -23,7 +23,7 @@ export const FairPricePolicySheet: React.FC<FairPricePolicySheetProps> = ({ isOp
               <Icons.Shield size={20} />
             </div>
             <h3 id="policy-title" className="font-marker font-bold text-xl text-[#FFFFFF]">
-              Fair Price &amp; Traveler Guarantee
+              Fair Price Policy
             </h3>
           </div>
           <button 
@@ -37,17 +37,11 @@ export const FairPricePolicySheet: React.FC<FairPricePolicySheetProps> = ({ isOp
 
         <div className="space-y-3 text-xs leading-relaxed">
           <p className="font-bold text-[#FFFFFF]">
-            Every single ticket is cross-verified by our 4-Locks Price Gate before your card is charged.
+            We check every price before it goes on sale, and again before your card is charged.
           </p>
           <p className="text-[#E6E6E6]/80 font-chalk">
-            If we ever publish a typo price, we notify you within 60 minutes, refund in full automatically, and give you priority access to the next window.
+            If we ever list a wrong price, everyone affected gets the same: a same-day refund of what you paid, a $100 credit on any trip of $1,000 or more, and first access to our next sale.
           </p>
-          <div className="sketch-dashed p-3 rounded-2xl space-y-1 text-[11px] bg-[#1A1A1A]">
-            <p className="font-bold text-[#88D49E]">✓ Checkout 8-Minute Hold Guarantee</p>
-            <p className="text-[#E6E6E6]/70 font-chalk">
-              If promotional seats expire while you are in checkout, your price is locked for the full 8-minute countdown. You never pay more without explicit consent.
-            </p>
-          </div>
         </div>
 
         <button

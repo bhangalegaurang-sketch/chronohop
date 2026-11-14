@@ -228,6 +228,21 @@ export const TripScreen: React.FC = () => {
                   <SeatTickBar total={liveSale.cap} remaining={remainingSeats} />
                 </div>
               )}
+
+              {/* Priority 5.1: Sale seats gone screen */}
+              {isFlagship && seatsGone && (
+                <div className="mt-3 pt-3 border-t border-[#E6E6E6]/20 flex items-center justify-between gap-2">
+                  <span className="text-xs font-sketch text-[#FF8C42]">
+                    Sale seats gone: back to $2,000
+                  </span>
+                  <button
+                    onClick={() => setCustomerScreen('waitlist')}
+                    className="sketch-btn px-3 py-1.5 rounded-full text-xs font-sketch border border-[#88D49E] text-[#88D49E] hover:bg-[#88D49E]/10 flex-shrink-0"
+                  >
+                    Join the next sale
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Departure Slot Selector */}
@@ -242,7 +257,20 @@ export const TripScreen: React.FC = () => {
 
               <div className="grid grid-cols-4 gap-2">
                 {TIME_SLOTS.map((slot) => {
-                  const isSelected = selectedSlot === slot;
+                  const isTaken = slot === '06:30';
+                  const isSelected = selectedSlot === slot && !isTaken;
+                  if (isTaken) {
+                    return (
+                      <button
+                        key={slot}
+                        disabled
+                        className="py-1 px-1 text-center rounded-xl border border-dashed border-[#E6E6E6]/20 bg-[#151515] text-[#E6E6E6]/30 text-xs font-mono min-h-[42px] cursor-not-allowed flex flex-col items-center justify-center"
+                      >
+                        <span className="line-through text-[11px]">{slot}</span>
+                        <span className="text-[9px] uppercase tracking-wider text-[#FF8C42]/70 font-sketch">Taken</span>
+                      </button>
+                    );
+                  }
                   return (
                     <button
                       key={slot}
@@ -290,7 +318,7 @@ export const TripScreen: React.FC = () => {
                 onClick={() => setShowFairPriceSheet(true)}
                 className="text-xs font-sketch text-[#FF8C42] hover:underline flex items-center gap-1"
               >
-                <span>Safety Rules</span>
+                <span>Fair price policy</span>
                 <ExternalLink size={12} />
               </button>
             </div>
@@ -317,14 +345,14 @@ export const TripScreen: React.FC = () => {
               </div>
             </div>
 
-            {/* Supplementary notes grouped in dashed bounding box (Design Guide Section 5) */}
+            {/* Supplementary notes grouped in dashed bounding box */}
             <div className="sketch-dashed rounded-[24px] p-4 space-y-2 text-xs">
               <div className="flex items-center justify-between text-[#88D49E]">
-                <span className="font-bold font-sketch">✓ Certified Return Beacon Guarantee</span>
-                <span className="font-mono text-[11px]">$100k Coverage</span>
+                <span className="font-bold font-sketch">✓ Dual Return Beacon Mesh</span>
+                <span className="font-mono text-[11px] text-[#88D49E]">Active</span>
               </div>
               <p className="text-[#E6E6E6]/70 font-chalk">
-                All expeditions are secured by ChronoHop's 4-Locks Fair Price Gate, dual return beacons, and licensed chrononavigators. Full refund if departure window shifts by more than 15 minutes.
+                All expeditions are equipped with dual return beacons and licensed chrononavigators for precise departure and return timing.
               </p>
             </div>
 

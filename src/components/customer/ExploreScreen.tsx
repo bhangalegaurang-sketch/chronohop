@@ -15,7 +15,7 @@ export const ExploreScreen: React.FC = () => {
   const dinoPrice = isSaleActive ? liveSale.price : 2000;
 
   const eraFilters = [
-    { id: 'all', label: 'All Epochs' },
+    { id: 'all', label: 'All' },
     { id: 'prehistoric', label: 'Prehistoric' },
     { id: 'victorian', label: 'Victorian 1895' },
     { id: 'antiquity', label: 'Ancient Giza' },
@@ -90,9 +90,15 @@ export const ExploreScreen: React.FC = () => {
             className="sketch-card rounded-[28px] p-4 relative cursor-pointer group transition-all"
           >
             {/* Floating pointer annotation */}
-            <div className="absolute -top-2.5 right-6 bg-[#1A1A1A] border border-[#FF8C42] text-[#FF8C42] text-[11px] font-sketch px-2.5 py-0.5 rounded-full shadow-xs -rotate-2">
-              ★ Flagship Promo · {remainingSeats} seats
-            </div>
+            {isSaleActive && remainingSeats > 0 ? (
+              <div className="absolute -top-2.5 right-6 bg-[#1A1A1A] border border-[#FF8C42] text-[#FF8C42] text-[11px] font-sketch px-2.5 py-0.5 rounded-full shadow-xs -rotate-2">
+                ★ Flagship Promo · {remainingSeats} seats
+              </div>
+            ) : (
+              <div className="absolute -top-2.5 right-4 bg-[#2A1E14] border border-[#FF8C42] text-[#FF8C42] text-[11px] font-sketch px-2.5 py-0.5 rounded-full shadow-xs">
+                Sale seats gone: back to $2,000
+              </div>
+            )}
 
             <div className="flex items-start justify-between mt-1">
               <div>
@@ -106,7 +112,7 @@ export const ExploreScreen: React.FC = () => {
                 <span className="text-2xl font-bold font-sketch text-[#FF8C42] block leading-tight">
                   {formatMoney(dinoPrice)}
                 </span>
-                {isSaleActive && (
+                {isSaleActive && remainingSeats > 0 && (
                   <span className="text-[11px] text-[#E6E6E6]/50 line-through font-mono">
                     $2,000
                   </span>
@@ -136,10 +142,23 @@ export const ExploreScreen: React.FC = () => {
               <span className="text-xs font-sketch text-[#E6E6E6]/70">
                 Single traveller pod · 30-min window
               </span>
-              <button className="sketch-btn-orange text-xs px-5 py-1.5 rounded-full flex items-center gap-1">
-                <span>BOOK</span>
-                <span>→</span>
-              </button>
+              <div className="flex items-center gap-2">
+                {(!isSaleActive || remainingSeats <= 0) && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCustomerScreen('waitlist');
+                    }}
+                    className="sketch-btn px-3 py-1.5 rounded-full text-xs font-sketch border border-[#88D49E]/70 text-[#88D49E] hover:bg-[#88D49E]/10"
+                  >
+                    Join the next sale
+                  </button>
+                )}
+                <button className="sketch-btn-orange text-xs px-5 py-1.5 rounded-full flex items-center gap-1">
+                  <span>BOOK</span>
+                  <span>→</span>
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -259,12 +278,12 @@ export const ExploreScreen: React.FC = () => {
                 <span className="text-2xl font-bold font-sketch text-[#FF8C42] block leading-tight">
                   $2,400
                 </span>
-                <span className="text-[10px] text-[#E6E6E6]/50 font-sketch">per pod</span>
+                <span className="text-[10px] text-[#E6E6E6]/50 font-sketch">deep space pod</span>
               </div>
             </div>
 
             <p className="text-xs text-[#E6E6E6]/80 font-chalk mt-1">
-              Humanity's first self-sustaining interplanetary colony with geodesic solar domes.
+              Humanity’s first red planet research colony nestled inside volcanic shield walls of Olympus Mons.
             </p>
 
             <div 
@@ -274,14 +293,17 @@ export const ExploreScreen: React.FC = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-[#1A1A1A] via-transparent to-transparent opacity-80" />
               <div className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between text-xs font-sketch text-[#E6E6E6]">
                 <span className="bg-[#1A1A1A]/80 border border-[#E6E6E6]/40 px-2 py-0.5 rounded-full text-[10px]">
-                  Caldera Biosphere Domes
+                  22nd Century Frontier
+                </span>
+                <span className="text-[10px] font-mono text-[#88D49E]">
+                  0.38 G Low Gravity
                 </span>
               </div>
             </div>
 
             <div className="mt-3 pt-2.5 border-t border-[#E6E6E6]/20 flex items-center justify-between">
               <span className="text-xs font-sketch text-[#E6E6E6]/70">
-                Low-gravity expedition
+                120-min Caldera excursion
               </span>
               <button className="sketch-btn-orange text-xs px-5 py-1.5 rounded-full flex items-center gap-1">
                 <span>BOOK</span>

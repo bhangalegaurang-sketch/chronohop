@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 export const ProfileScreen: React.FC = () => {
   const [chronoId, setChronoId] = useState('CH-88219-VR');
-  const [isSaved, setIsSaved] = useState(true);
+  const [isSaved, setIsSaved] = useState(false);
 
   return (
     <div className="h-full visible-scrollbar-y pb-28 p-4 text-[#E6E6E6] font-sketch select-none relative z-10 space-y-4">

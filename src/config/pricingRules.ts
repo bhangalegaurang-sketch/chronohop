@@ -39,7 +39,7 @@ export const PRICING_RULES = {
   DEMO_BREAKER_THRESHOLD: 30, // 5 * 6 = 30 bookings
 
   // Customer Checkout
-  CHECKOUT_HOLD_SECONDS: 480, // 8 minutes slot hold
+  CHECKOUT_HOLD_SECONDS: 300, // 5 minutes slot hold (300 seconds)
   PRICE_CHECK_PROMISE_HOURS: 1, // Informed within 1 hour if mistake
 } as const;
 

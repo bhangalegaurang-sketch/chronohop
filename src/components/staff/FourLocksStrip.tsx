@@ -9,100 +9,108 @@ export const FourLocksStrip: React.FC = () => {
   const lock4Active = lock4BreakerEnabled;
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-3.5 bg-[#07110E] border-b border-[#1A3026]">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-4 bg-[#181818] border-b border-[#E6E6E6]/15 font-sketch">
       {/* Lock 1: Promotional Seat Cap */}
-      <div className={`p-3 rounded-xl border flex flex-col justify-between transition-all duration-200 shadow-sm ${
+      <div className={`p-3.5 rounded-2xl border transition-all duration-200 shadow-xs flex flex-col justify-between ${
         lock1Active 
-          ? 'bg-gradient-to-b from-[#0E221A] to-[#0A1612] border-[#224434]' 
-          : 'bg-gradient-to-b from-[#1C0F0E] to-[#120A09] border-[#4A201A]'
+          ? 'bg-[#222222] border-[#88D49E]/50' 
+          : 'bg-[#251A1A] border-red-500/50'
       }`}>
-        <div className="flex items-center justify-between text-xs font-bold">
-          <span className="flex items-center gap-2 text-staff-text">
-            <span className={`w-2.5 h-2.5 rounded-full ${lock1Active ? 'bg-staff-ok shadow-[0_0_8px_#6FD3A0]' : 'bg-staff-danger'}`} />
+        <div className="flex items-center justify-between text-xs">
+          <span className="flex items-center gap-2 font-bold text-[#FFFFFF]">
+            <span className={`w-2 h-2 rounded-full ${lock1Active ? 'bg-[#88D49E] shadow-[0_0_8px_#88D49E]' : 'bg-red-400'}`} />
             Lock 1: Seat Cap
           </span>
-          <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded border ${
+          <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border ${
             lock1Active 
-              ? 'bg-staff-ok/15 text-staff-ok border-staff-ok/30' 
-              : 'bg-staff-danger/15 text-staff-dangerLight border-staff-danger/40'
+              ? 'bg-[#88D49E]/15 text-[#88D49E] border-[#88D49E]/40' 
+              : 'bg-red-500/15 text-red-300 border-red-500/40'
           }`}>
             {lock1Active ? 'ACTIVE' : 'BYPASS'}
           </span>
         </div>
-        <p className="text-[11px] text-staff-muted mt-2 leading-snug">
+        <p className="text-[11px] text-[#E6E6E6]/70 font-chalk mt-2 leading-relaxed">
           Caps promo capacity at 33 seats (10% of window or $100k budget).
         </p>
       </div>
 
       {/* Lock 2: Dual Approval & Retype */}
-      <div className="p-3 rounded-xl border bg-gradient-to-b from-[#0E221A] to-[#0A1612] border-[#224434] flex flex-col justify-between shadow-sm">
-        <div className="flex items-center justify-between text-xs font-bold">
-          <span className="flex items-center gap-2 text-staff-text">
-            <span className={`w-2.5 h-2.5 rounded-full ${pendingApproval ? 'bg-staff-brass shadow-[0_0_8px_#E3A93B] animate-pulse' : 'bg-staff-ok shadow-[0_0_8px_#6FD3A0]'}`} />
+      <div className="p-3.5 rounded-2xl border bg-[#222222] border-[#88D49E]/50 flex flex-col justify-between shadow-xs">
+        <div className="flex items-center justify-between text-xs">
+          <span className="flex items-center gap-2 font-bold text-[#FFFFFF]">
+            <span className={`w-2 h-2 rounded-full ${pendingApproval ? 'bg-[#FF8C42] shadow-[0_0_8px_#FF8C42] animate-pulse' : 'bg-[#88D49E] shadow-[0_0_8px_#88D49E]'}`} />
             Lock 2: Dual Approval
           </span>
-          <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded border ${
+          <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border ${
             pendingApproval 
-              ? 'bg-staff-brass/20 text-staff-brass border-staff-brass/40 animate-pulse' 
-              : 'bg-staff-ok/15 text-staff-ok border-staff-ok/30'
+              ? 'bg-[#FF8C42]/20 text-[#FF8C42] border-[#FF8C42]/50 animate-pulse' 
+              : 'bg-[#88D49E]/15 text-[#88D49E] border-[#88D49E]/40'
           }`}>
             {pendingApproval ? 'PENDING' : 'READY'}
           </span>
         </div>
-        <p className="text-[11px] text-staff-muted mt-2 leading-snug">
+        <p className="text-[11px] text-[#E6E6E6]/70 font-chalk mt-2 leading-relaxed">
           Discounts over 30% require a second person to retype the exact price.
         </p>
       </div>
 
       {/* Lock 3: Automatic Price Reversion */}
-      <div className={`p-3 rounded-xl border flex flex-col justify-between transition-all duration-200 shadow-sm ${
+      <div className={`p-3.5 rounded-2xl border flex flex-col justify-between transition-all duration-200 shadow-xs ${
         lock3Active 
-          ? 'bg-gradient-to-b from-[#2E180A] to-[#1A0D05] border-staff-brass ring-1 ring-staff-brass/60' 
-          : 'bg-gradient-to-b from-[#0E221A] to-[#0A1612] border-[#224434]'
+          ? 'bg-[#2A1E14] border-[#FF8C42] ring-1 ring-[#FF8C42]/60' 
+          : 'bg-[#222222] border-[#88D49E]/50'
       }`}>
-        <div className="flex items-center justify-between text-xs font-bold">
-          <span className="flex items-center gap-2 text-staff-text">
-            <span className={`w-2.5 h-2.5 rounded-full ${lock3Active ? 'bg-staff-brass shadow-[0_0_8px_#E3A93B] animate-ping' : 'bg-staff-ok shadow-[0_0_8px_#6FD3A0]'}`} />
+        <div className="flex items-center justify-between text-xs">
+          <span className="flex items-center gap-2 font-bold text-[#FFFFFF]">
+            <span className={`w-2 h-2 rounded-full ${lock3Active ? 'bg-[#FF8C42] shadow-[0_0_8px_#FF8C42] animate-pulse' : 'bg-[#88D49E] shadow-[0_0_8px_#88D49E]'}`} />
             Lock 3: Auto-Revert
           </span>
-          <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded border ${
+          <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border ${
             lock3Active 
-              ? 'bg-staff-brass text-black border-staff-brass font-black' 
-              : 'bg-staff-ok/15 text-staff-ok border-staff-ok/30'
+              ? 'bg-[#FF8C42]/20 text-[#FF8C42] border-[#FF8C42]/50' 
+              : 'bg-[#88D49E]/15 text-[#88D49E] border-[#88D49E]/40'
           }`}>
-            {lock3Active ? 'TRIGGERED' : 'ARMED'}
+            {lock3Active ? 'REVERTED' : 'ARMED'}
           </span>
         </div>
-        <p className="text-[11px] text-staff-muted mt-2 leading-snug">
-          Returns price to $2,000 list price immediately once 33 seats sell.
+        <p className="text-[11px] text-[#E6E6E6]/70 font-chalk mt-2 leading-relaxed">
+          When promo seats sell out, price auto-reverts to $2,000 list instantly.
         </p>
       </div>
 
-      {/* Lock 4: Speed Breaker Circuit */}
-      <div className={`p-3 rounded-xl border flex flex-col justify-between transition-all duration-200 shadow-sm ${
+      {/* Lock 4: Speed Breaker */}
+      <div className={`p-3.5 rounded-2xl border flex flex-col justify-between transition-all duration-200 shadow-xs ${
         liveSale.isPaused
-          ? 'bg-gradient-to-b from-[#330F0C] to-[#1A0706] border-staff-danger ring-1 ring-staff-danger'
+          ? 'hatch-orange bg-[#241A14] border-[#FF8C42] ring-2 ring-[#FF8C42]/60'
           : lock4Active
-          ? 'bg-gradient-to-b from-[#0E221A] to-[#0A1612] border-[#224434]'
-          : 'bg-gradient-to-b from-[#1C0F0E] to-[#120A09] border-[#4A201A]'
+            ? 'bg-[#222222] border-[#88D49E]/50'
+            : 'bg-[#251A1A] border-red-500/50'
       }`}>
-        <div className="flex items-center justify-between text-xs font-bold">
-          <span className="flex items-center gap-2 text-staff-text">
-            <span className={`w-2.5 h-2.5 rounded-full ${liveSale.isPaused ? 'bg-staff-danger shadow-[0_0_8px_#C4302B] animate-ping' : 'bg-staff-ok shadow-[0_0_8px_#6FD3A0]'}`} />
+        <div className="flex items-center justify-between text-xs">
+          <span className="flex items-center gap-2 font-bold text-[#FFFFFF]">
+            <span className={`w-2 h-2 rounded-full ${
+              liveSale.isPaused 
+                ? 'bg-[#FF8C42] shadow-[0_0_8px_#FF8C42] animate-ping' 
+                : lock4Active 
+                  ? 'bg-[#88D49E] shadow-[0_0_8px_#88D49E]' 
+                  : 'bg-red-400'
+            }`} />
             Lock 4: Speed Breaker
           </span>
-          <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded border ${
+          <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border ${
             liveSale.isPaused
-              ? 'bg-staff-danger text-white border-staff-danger font-black animate-pulse'
+              ? 'bg-[#FF8C42] text-[#1A1A1A] border-[#FF8C42] font-black animate-pulse'
               : lock4Active
-              ? 'bg-staff-ok/15 text-staff-ok border-staff-ok/30'
-              : 'bg-staff-danger/15 text-staff-dangerLight border-staff-danger/40'
+                ? 'bg-[#88D49E]/15 text-[#88D49E] border-[#88D49E]/40'
+                : 'bg-red-500/15 text-red-300 border-red-500/40'
           }`}>
-            {liveSale.isPaused ? 'PAUSED' : lock4Active ? 'ARMED' : 'OFF'}
+            {liveSale.isPaused ? 'TRIPPED' : lock4Active ? 'ARMED' : 'BYPASS'}
           </span>
         </div>
-        <p className="text-[11px] text-staff-muted mt-2 leading-snug">
-          Auto-pauses sales if velocity exceeds 5× forecast (30 bookings in 5 min).
+        <p className="text-[11px] text-[#E6E6E6]/70 font-chalk mt-2 leading-relaxed">
+          {liveSale.isPaused
+            ? '⚠ Paused: velocity exceeded 5x forecast threshold.'
+            : 'Trips circuit breaker if bookings exceed 5x normal velocity.'}
         </p>
       </div>
     </div>

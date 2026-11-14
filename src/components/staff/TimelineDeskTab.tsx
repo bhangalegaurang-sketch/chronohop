@@ -1,10 +1,10 @@
 import React from 'react';
 import { useStore } from '../../store/useStore';
-import { Icons } from '../icons/Icons';
 import { DialGauge } from './DialGauge';
 import { SaleSpeedChart } from './SaleSpeedChart';
 import { PRICING_RULES } from '../../config/pricingRules';
 import { formatMoney } from '../../utils/formatters';
+import { Play, Pause, XCircle } from 'lucide-react';
 
 export const TimelineDeskTab: React.FC = () => {
   const {
@@ -31,7 +31,7 @@ export const TimelineDeskTab: React.FC = () => {
   const currentExposure = liveSale.soldCount * Math.max(0, PRICING_RULES.LIST_PRICE - liveSale.price);
 
   return (
-    <div className="space-y-4 p-4 text-staff-text overflow-y-auto">
+    <div className="space-y-4 p-4 text-[#E6E6E6] font-sketch select-none">
       {/* Three Dials Row */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         {/* Dial 1: Bookings per slot */}
@@ -54,127 +54,100 @@ export const TimelineDeskTab: React.FC = () => {
 
         {/* Dial 3: Bookings last 5m vs forecast */}
         <DialGauge
-          label="BOOKINGS, LAST 5 MIN VS FORECAST"
+          label="BOOKINGS (5 MIN VS FORECAST)"
           value={`${speedRatio.toFixed(1)}x`}
-          subtext={`Forecast: 6. Breaker trips above 5x.`}
+          subtext={`Forecast: 6. Circuit breaker trips above 5x velocity.`}
           pct={Math.min(100, (speedRatio / 6) * 100)}
           isAlarm={isSpeedAlarm}
         />
       </div>
 
-      {/* Sale Speed Bar Chart */}
+      {/* Real-time Velocity Chart */}
       <SaleSpeedChart data={speedHistory} />
 
-      {/* Timeline Desk Status Panel */}
-      <div className="bg-staff-panel border border-staff-border rounded-2xl p-4 space-y-4 shadow-md">
-        <div className="flex items-center justify-between pb-3 border-b border-staff-border text-xs">
-          <div className="flex items-center gap-2">
-            <Icons.Desk size={16} className="text-staff-brass" />
-            <span className="font-mono font-bold uppercase tracking-wider text-staff-text">
-              TIMELINE DESK · STATUS
+      {/* Mission Control Status & Emergency Actions */}
+      <div className="sketch-card rounded-[24px] p-5 space-y-4 bg-[#202020]">
+        <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-[#E6E6E6]/20">
+          <div>
+            <h3 className="font-marker font-bold text-xl text-[#FFFFFF] tracking-tight">
+              Listing Operations &amp; Exposure Guard
+            </h3>
+            <p className="text-xs text-[#E6E6E6]/70 font-chalk">
+              Live state controls, promotional exposure ledger, and instant kill switches.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-mono">
+              Total promo exposure: <strong className="text-[#FF8C42]">{formatMoney(currentExposure)}</strong>
             </span>
           </div>
-          <span className={`font-mono text-xs font-black px-2.5 py-0.5 rounded ${
-            liveSale.isPaused
-              ? 'bg-staff-danger text-white animate-pulse'
-              : liveSale.isEnded
-              ? 'bg-staff-muted/30 text-staff-muted'
-              : 'bg-staff-ok/20 text-staff-ok'
-          }`}>
-            {liveSale.isPaused ? 'PAUSED' : liveSale.isEnded ? 'SALE ENDED' : 'LIVE · SALE ON'}
-          </span>
         </div>
 
-        {/* Status Rows */}
-        <div className="space-y-2 text-xs">
-          <div className="flex justify-between items-center py-2 border-b border-dashed border-staff-border">
-            <span className="text-staff-muted">Listing</span>
-            <strong className={`font-mono font-bold ${liveSale.isPaused ? 'text-staff-danger' : 'text-staff-ok'}`}>
-              {liveSale.isPaused ? 'PAUSED' : isSaleActive ? 'LIVE, sale on' : 'LIVE, standard price'}
-            </strong>
-          </div>
-
-          <div className="flex justify-between items-center py-2 border-b border-dashed border-staff-border">
-            <span className="text-staff-muted">Sale seats sold</span>
-            <strong className="font-mono text-staff-text">
-              {Math.min(liveSale.soldCount, lock1CapEnabled ? liveSale.cap : liveSale.soldCount)}
-              {lock1CapEnabled ? ` of ${liveSale.cap}` : ' (cap is off)'}
-            </strong>
-          </div>
-
-          <div className="flex justify-between items-center py-2">
-            <span className="text-staff-muted">Exposure so far</span>
-            <strong className="font-mono text-staff-glow">
-              {formatMoney(currentExposure)}
-            </strong>
-          </div>
-        </div>
-
-        {/* Buttons: Pause / Resume & End sale early */}
-        <div className="flex flex-wrap gap-3 pt-2">
+        {/* Action Controls Bar */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
           {liveSale.isPaused ? (
             <button
               onClick={resumeListing}
-              className="flex-1 py-3 px-4 bg-staff-ok text-staff-bg font-mono font-black text-xs rounded-xl hover:bg-[#5bb887] transition-all shadow-md flex items-center justify-center gap-2 min-h-[44px]"
+              className="sketch-btn-orange py-3 px-4 rounded-full text-xs flex items-center justify-center gap-2 shadow-sm"
             >
-              <Icons.Play size={16} />
-              Resume listing
+              <Play size={15} />
+              <span>RESUME LISTING (1-CLICK ON-CALL CLEARANCE)</span>
             </button>
           ) : (
             <button
-              onClick={() => pauseListing(true)}
-              disabled={liveSale.isEnded}
-              className="flex-1 py-3 px-4 bg-staff-danger hover:bg-[#A82520] text-white font-mono font-bold text-xs rounded-xl transition-all shadow-md flex items-center justify-center gap-2 min-h-[44px]"
+              onClick={() => pauseListing()}
+              className="py-3 px-4 rounded-full border border-red-500 text-red-300 bg-red-950/40 hover:bg-red-900/60 font-bold text-xs flex items-center justify-center gap-2 transition-colors shadow-xs"
             >
-              <Icons.Pause size={16} />
-              Pause listing
+              <Pause size={15} />
+              <span>EMERGENCY PAUSE LISTING</span>
             </button>
           )}
 
           <button
             onClick={endSaleEarly}
-            disabled={liveSale.isEnded}
-            className="flex-1 py-3 px-4 bg-staff-panel hover:bg-[#1A2E26] border border-staff-border text-staff-text font-mono font-bold text-xs rounded-xl transition-colors min-h-[44px]"
+            className="py-3 px-4 rounded-full border border-[#E6E6E6]/30 bg-[#1A1A1A] hover:bg-[#2A2A2A] text-xs text-[#E6E6E6] font-bold flex items-center justify-center gap-2 transition-colors shadow-xs"
           >
-            End sale early
+            <XCircle size={15} className="text-[#FF8C42]" />
+            <span>END PROMO EARLY (RESTORE $2,000 LIST)</span>
           </button>
         </div>
       </div>
 
-      {/* What happened, newest first */}
-      <div className="bg-staff-panel border border-staff-border rounded-2xl p-4 space-y-2 shadow-md">
-        <div className="flex items-center justify-between pb-2 border-b border-staff-border text-xs">
-          <div className="flex items-center gap-1.5 font-mono font-bold uppercase tracking-wider text-staff-muted">
-            <Icons.Clock size={14} className="text-staff-brass" />
-            WHAT HAPPENED, NEWEST FIRST
-          </div>
-          <span className="text-[10px] font-mono text-staff-muted">
-            {eventLog.length} events
+      {/* Event Audit Ledger */}
+      <div className="sketch-dashed rounded-[24px] p-4 space-y-2 bg-[#1A1A1A]">
+        <div className="flex items-center justify-between text-xs pb-1 border-b border-[#E6E6E6]/15">
+          <span className="font-bold uppercase tracking-wider text-[#FF8C42]">
+            Live Event Audit Trail
+          </span>
+          <span className="text-[10px] font-mono text-[#E6E6E6]/50">
+            {eventLog.length} events recorded
           </span>
         </div>
 
-        <div className="max-h-48 overflow-y-auto space-y-1.5 font-mono text-xs pr-1">
-          {eventLog.map((log) => (
-            <div
-              key={log.id}
-              className={`p-2 rounded-lg border flex items-start gap-2.5 text-[11px] leading-relaxed transition-all ${
-                log.type === 'lock'
-                  ? 'bg-[#18261E] border-staff-brass/50 text-staff-glow'
-                  : log.type === 'alert'
-                  ? 'bg-[#290D0B] border-staff-danger/60 text-staff-dangerLight'
-                  : log.type === 'success'
-                  ? 'bg-[#0E2019] border-staff-ok/40 text-staff-ok'
-                  : 'bg-[#0A1612] border-staff-border/50 text-staff-text/90'
-              }`}
-            >
-              <span className="text-[10px] text-staff-muted flex-shrink-0 pt-0.5">
-                {log.timestamp}
-              </span>
-              <span className="flex-1">
-                {log.message}
-              </span>
-            </div>
-          ))}
+        <div className="space-y-1.5 max-h-40 overflow-y-auto visible-scrollbar-y pr-1">
+          {eventLog.length === 0 ? (
+            <p className="text-xs text-[#E6E6E6]/50 font-chalk italic py-2 text-center">
+              No audit events recorded yet.
+            </p>
+          ) : (
+            eventLog.slice().reverse().map((entry) => (
+              <div
+                key={entry.id}
+                className="flex items-start justify-between text-xs font-mono py-1 border-b border-[#E6E6E6]/10 last:border-0"
+              >
+                <div className="flex items-center gap-2">
+                  <span className={`w-1.5 h-1.5 rounded-full ${
+                    entry.type === 'alert' ? 'bg-red-400' : entry.type === 'lock' ? 'bg-[#FF8C42]' : entry.type === 'success' ? 'bg-[#88D49E]' : 'bg-gray-400'
+                  }`} />
+                  <span className="text-[#FFFFFF]">{entry.message}</span>
+                </div>
+                <span className="text-[10px] text-[#E6E6E6]/50 flex-shrink-0 ml-2">
+                  {entry.timestamp}
+                </span>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>

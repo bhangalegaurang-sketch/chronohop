@@ -16,7 +16,6 @@ export const DialGauge: React.FC<DialGaugeProps> = ({
   isAlarm = false,
   pct = 50,
 }) => {
-  // SVG semi-circle gauge calculations (-120deg to +120deg, total 240deg)
   const radius = 38;
   const stroke = 6;
   const normalizedPct = Math.max(0, Math.min(100, pct));
@@ -25,25 +24,23 @@ export const DialGauge: React.FC<DialGaugeProps> = ({
 
   return (
     <div
-      className={`relative flex-1 min-w-[170px] p-3.5 rounded-2xl border transition-all duration-300 flex flex-col justify-between overflow-hidden ${
+      className={`relative flex-1 min-w-[170px] p-4 rounded-[24px] border transition-all duration-300 flex flex-col justify-between overflow-hidden font-sketch ${
         isAlarm
-          ? 'bg-gradient-to-b from-[#2A0E0C] to-[#1A0706] border-staff-danger shadow-[0_0_20px_rgba(196,48,43,0.35)] ring-1 ring-staff-danger/50'
-          : 'bg-gradient-to-b from-[#0F1F19] to-[#0A1612] border-staff-border shadow-inner'
+          ? 'bg-[#261614] border-red-500 shadow-[0_0_15px_rgba(229,72,77,0.3)] ring-1 ring-red-500/50'
+          : 'sketch-card bg-[#202020]'
       }`}
     >
-      {/* Background radial accent glow */}
-      <div 
-        className={`absolute top-0 right-0 w-24 h-24 rounded-full pointer-events-none blur-2xl ${
-          isAlarm ? 'bg-staff-danger/15' : 'bg-staff-glow/5'
-        }`} 
-      />
+      {/* Background scribble accent */}
+      {isAlarm && (
+        <div className="absolute top-0 right-0 w-24 h-24 hatch-pattern opacity-30 rounded-bl-[40px] pointer-events-none" />
+      )}
 
       {/* Label */}
       <div className="flex items-center justify-between z-10">
-        <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-staff-muted truncate">
+        <span className="text-[11px] font-mono font-bold tracking-wider uppercase text-[#E6E6E6]/70 truncate">
           {label}
         </span>
-        <span className={`w-1.5 h-1.5 rounded-full ${isAlarm ? 'bg-staff-danger animate-ping' : 'bg-staff-ok/60'}`} />
+        <span className={`w-2 h-2 rounded-full ${isAlarm ? 'bg-red-500 animate-ping' : 'bg-[#88D49E]'}`} />
       </div>
 
       {/* Gauge Visualization & Value */}
@@ -57,47 +54,45 @@ export const DialGauge: React.FC<DialGaugeProps> = ({
               cy="50"
               r={radius}
               fill="none"
-              stroke="#1B3329"
+              stroke="#333333"
               strokeWidth={stroke}
-              strokeDasharray={`${arcLength} 300`}
+              strokeDasharray={arcLength}
               strokeLinecap="round"
             />
-            {/* Active Filled Arc */}
+            {/* Foreground Arc */}
             <circle
               cx="50"
               cy="50"
               r={radius}
               fill="none"
-              stroke={isAlarm ? '#FF8A7A' : '#E3A93B'}
-              strokeWidth={stroke}
-              strokeDasharray={`${arcLength} 300`}
+              stroke={isAlarm ? '#E5484D' : '#FF8C42'}
+              strokeWidth={stroke + 1}
+              strokeDasharray={arcLength}
               strokeDashoffset={strokeDashoffset}
               strokeLinecap="round"
               className="transition-all duration-500 ease-out"
             />
           </svg>
-          {/* Subtle Dial Center Pin */}
-          <div className={`absolute w-2 h-2 rounded-full ${isAlarm ? 'bg-staff-dangerLight' : 'bg-staff-glow'} shadow-[0_0_6px_currentColor]`} />
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className={`w-2 h-2 rounded-full ${isAlarm ? 'bg-red-400' : 'bg-[#88D49E]'}`} />
+          </div>
         </div>
 
-        {/* Big Number Readout */}
-        <div className="flex-1 min-w-0">
-          <div
-            className={`font-mono font-black text-2xl sm:text-3xl tracking-tight leading-none ${
-              isAlarm
-                ? 'text-[#FF8A7A] drop-shadow-[0_0_10px_rgba(255,138,122,0.8)]'
-                : 'text-staff-glow drop-shadow-[0_0_8px_rgba(241,196,107,0.4)]'
-            }`}
-          >
+        {/* Big Value Readout */}
+        <div className="flex flex-col">
+          <span className={`text-2xl font-mono font-black tracking-tight ${isAlarm ? 'text-red-400' : 'text-[#FF8C42]'}`}>
             {value}
-          </div>
+          </span>
+          <span className="text-[10px] text-[#E6E6E6]/50 font-mono uppercase">
+            {isAlarm ? '⚠ EXCEEDS THRESHOLD' : '✓ NOMINAL FLOW'}
+          </span>
         </div>
       </div>
 
       {/* Subtext */}
-      <div className="text-[10.5px] text-staff-muted leading-tight truncate z-10 border-t border-staff-border/40 pt-1.5" title={subtext}>
+      <p className="text-[11px] text-[#E6E6E6]/70 font-chalk z-10 leading-snug">
         {subtext}
-      </div>
+      </p>
     </div>
   );
 };

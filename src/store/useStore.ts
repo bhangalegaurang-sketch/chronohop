@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { PRICING_RULES } from '../config/pricingRules';
+import { TRIPS_CATALOG } from '../config/tripsData';
 import {
   calculatePrice,
   getEffectiveCap,
@@ -92,6 +93,7 @@ export interface AppStore {
   // Customer Checkout
   checkoutHoldSeconds: number;
   checkoutPriceAtHold: number;
+  customerSaleSeatsBooked: number;
   mismatchAcknowledged: boolean;
 
   // Demo Controls & Locks
@@ -135,6 +137,8 @@ export interface AppStore {
 
   // Customer Booking Actions
   bookSeat: (count?: number) => boolean;
+  incrementCustomerSaleSeatsBooked: () => void;
+  setCheckoutPriceAtHold: (price: number) => void;
   triggerRush: () => void;
   stopRush: () => void;
   acknowledgeMismatch: () => void;
@@ -195,6 +199,7 @@ export const useStore = create<AppStore>((set, get) => ({
 
   checkoutHoldSeconds: PRICING_RULES.CHECKOUT_HOLD_SECONDS,
   checkoutPriceAtHold: 1600,
+  customerSaleSeatsBooked: 0,
   mismatchAcknowledged: false,
 
   lock1CapEnabled: true,
@@ -211,7 +216,7 @@ export const useStore = create<AppStore>((set, get) => ({
     {
       id: 'init-2',
       timestamp: '07:40:02',
-      message: 'Lock 1 (Seat Cap) and Lock 4 (Speed Breaker) armed.',
+      message: 'Lock 1 (Percent Entry), Lock 2 (Second Look), Lock 3 (Seat Cap) and Lock 4 (Speed Breaker) armed.',
       type: 'lock',
     }
   ],
@@ -230,10 +235,12 @@ export const useStore = create<AppStore>((set, get) => ({
 
   setCustomerScreen: (screen) => {
     const state = get();
-    // If entering checkout, lock the current displayed price and reset 8-minute hold
+    // If entering checkout, lock the current displayed price and reset 5-minute hold
     if (screen === 'checkout') {
-      const isSaleValid = state.liveSale.isActive && !state.liveSale.isEnded && (!state.lock1CapEnabled || state.liveSale.soldCount < state.liveSale.cap);
-      const heldPrice = isSaleValid ? state.liveSale.price : PRICING_RULES.LIST_PRICE;
+      const trip = TRIPS_CATALOG[state.selectedTripId] || TRIPS_CATALOG.dino;
+      const isFlagship = Boolean(trip.isFlagship);
+      const isSaleValid = isFlagship && state.liveSale.isActive && !state.liveSale.isEnded && (!state.lock1CapEnabled || state.liveSale.soldCount < state.liveSale.cap);
+      const heldPrice = isSaleValid ? state.liveSale.price : trip.basePrice;
       set({
         customerScreen: screen,
         checkoutHoldSeconds: PRICING_RULES.CHECKOUT_HOLD_SECONDS,
@@ -496,6 +503,14 @@ export const useStore = create<AppStore>((set, get) => ({
     return true;
   },
 
+  incrementCustomerSaleSeatsBooked: () => {
+    set((s) => ({ customerSaleSeatsBooked: s.customerSaleSeatsBooked + 1 }));
+  },
+
+  setCheckoutPriceAtHold: (price: number) => {
+    set({ checkoutPriceAtHold: price });
+  },
+
   triggerRush: () => {
     get().stopRush();
     get().addLog('A deal site shared the sale link! Deal-site rush started...', 'alert');
@@ -561,6 +576,7 @@ export const useStore = create<AppStore>((set, get) => ({
       retypeError: null,
       checkoutHoldSeconds: PRICING_RULES.CHECKOUT_HOLD_SECONDS,
       checkoutPriceAtHold: 1600,
+      customerSaleSeatsBooked: 0,
       mismatchAcknowledged: false,
       lock1CapEnabled: true,
       lock4BreakerEnabled: true,
@@ -572,7 +588,7 @@ export const useStore = create<AppStore>((set, get) => ({
   toggleLock1: () => {
     const nextVal = !get().lock1CapEnabled;
     set({ lock1CapEnabled: nextVal });
-    get().addLog(`DEMO TOGGLE: Lock 1 (Seat Cap) set to ${nextVal ? 'ON (active)' : 'OFF (unprotected)'}.`, 'lock');
+    get().addLog(`DEMO TOGGLE: Lock 3 (Seat Cap) set to ${nextVal ? 'ON (active)' : 'OFF (unprotected)'}.`, 'lock');
   },
 
   toggleLock4: () => {
